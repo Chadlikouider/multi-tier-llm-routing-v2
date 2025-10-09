@@ -1,0 +1,13 @@
+_target_: src.optimizer.QtOnline
+horizon: 24  # hours
+oracle: False
+
+# Callbacks
+st_callback:
+  _target_: src.util.Callback
+  gap: 0.001
+  # soft_limit: 1
+  time_limit: 10
+
+# Gurobi logging
+st_silent: True

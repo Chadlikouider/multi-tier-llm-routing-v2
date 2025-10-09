@@ -1,0 +1,18 @@
+pandas
+pyarrow
+numpy
+tqdm
+
+hydra-core
+pulp
+
+jupyterlab
+ipywidgets
+matplotlib
+seaborn
+plotly
+
+# foreacsting
+prophet
+
+pytest

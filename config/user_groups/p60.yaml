@@ -1,0 +1,30 @@
+name: p60
+groups:
+  - name: best-effort
+    weight: 0.4
+    slo_lower:
+      tier_0: 1
+      tier_1: 0.75
+      tier_2: 0.5
+      tier_3: 0.25
+      tier_4: 0
+    slo_upper:
+      tier_0: 0
+      tier_1: 0.25
+      tier_2: 0.5
+      tier_3: 0.75
+      tier_4: 1
+  - name: premium
+    weight: 0.6
+    slo_lower:
+      tier_0: 0
+      tier_1: 0
+      tier_2: 0
+      tier_3: 0
+      tier_4: 1
+    slo_upper:
+      tier_0: 0
+      tier_1: 0
+      tier_2: 0
+      tier_3: 0
+      tier_4: 1
