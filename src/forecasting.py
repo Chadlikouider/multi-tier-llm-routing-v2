@@ -14,6 +14,8 @@ from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
+from prophet import Prophet  # Imported lazily to keep import time minimal.
+
 
 from src.util import DT_INDEX
 
@@ -76,7 +78,6 @@ def generate_prophet_forecast(
         Additional keyword arguments forwarded directly to :class:`prophet.Prophet`.
     """
 
-    from prophet import Prophet  # Imported lazily to keep import time minimal.
 
     if prophet_params is None:
         prophet_params = {}
