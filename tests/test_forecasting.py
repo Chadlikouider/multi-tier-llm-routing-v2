@@ -53,7 +53,11 @@ def test_load_prophet_forecast_uses_cache(monkeypatch, tmp_path):
 
     monkeypatch.setattr(forecasting, "generate_prophet_forecast", _unexpected_call)
 
-    result = forecasting.load_prophet_forecast(pd.DataFrame(), 0, {}, "cached_forecast")
+    empty_input = pd.DataFrame()
+    result = forecasting.load_prophet_forecast(empty_input, 0, {}, "cached_forecast")
+
+    print("load_prophet_forecast_uses_cache input:", empty_input.to_dict(), "shape:", empty_input.shape)
+    print("load_prophet_forecast_uses_cache result:", result.to_dict(), "shape:", result.shape)
 
     pd.testing.assert_frame_equal(result, _sample_forecast_dataframe())
 
@@ -69,7 +73,27 @@ def test_load_prophet_forecast_generates_when_missing(monkeypatch, tmp_path):
         forecasting, "generate_prophet_forecast", lambda *args, **kwargs: (generated, None)
     )
 
-    result = forecasting.load_prophet_forecast(pd.DataFrame(), 0, {}, "new_forecast")
+    empty_input = pd.DataFrame()
+    result = forecasting.load_prophet_forecast(empty_input, 0, {}, "new_forecast")
+
+    print(
+        "load_prophet_forecast_generates_when_missing input:",
+        empty_input.to_dict(),
+        "shape:",
+        empty_input.shape,
+    )
+    print(
+        "load_prophet_forecast_generates_when_missing generated:",
+        generated.to_dict(),
+        "shape:",
+        generated.shape,
+    )
+    print(
+        "load_prophet_forecast_generates_when_missing result:",
+        result.to_dict(),
+        "shape:",
+        result.shape,
+    )
 
     pd.testing.assert_frame_equal(result, generated)
     assert cache_path.exists()
@@ -86,6 +110,15 @@ def test_generate_bootstrapped_forecast_samples_errors():
 
     result = forecasting.generate_bootstrapped_forecast(baseline, historical, rng)
 
+    print("generate_bootstrapped_forecast_errors baseline:", baseline, "shape:", baseline.shape)
+    print(
+        "generate_bootstrapped_forecast_errors historical:",
+        historical,
+        "shape:",
+        historical.shape,
+    )
+    print("generate_bootstrapped_forecast_errors result:", result, "shape:", result.shape)
+
     # With the fixed seed we expect a deterministic sampled error vector.
     expected_errors = np.array([0.1, 0.05, -0.2])
     np.testing.assert_allclose(result, baseline * (1 + expected_errors))
@@ -98,5 +131,9 @@ def test_generate_bootstrapped_forecast_no_errors():
     rng = np.random.default_rng(123)
 
     result = forecasting.generate_bootstrapped_forecast(baseline, np.array([]), rng)
+
+    print("generate_bootstrapped_forecast_no_errors baseline:", baseline, "shape:", baseline.shape)
+    print("generate_bootstrapped_forecast_no_errors historical: [] shape: (0,)")
+    print("generate_bootstrapped_forecast_no_errors result:", result, "shape:", result.shape)
 
     np.testing.assert_allclose(result, baseline)
