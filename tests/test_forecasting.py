@@ -137,3 +137,8 @@ def test_generate_bootstrapped_forecast_no_errors():
     print("generate_bootstrapped_forecast_no_errors result:", result, "shape:", result.shape)
 
     np.testing.assert_allclose(result, baseline)
+
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main(["-s", __file__]))
