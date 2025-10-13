@@ -1,7 +1,10 @@
+# Python virtual environment
 .venv/
 
+# Python cache directories
+__pycache__/
+*.py[cod]
 
-__pycache__
-
-cache
-/data/request_traces
+# Cache or temporary data
+cache/
+data/request_traces/
