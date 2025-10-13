@@ -334,29 +334,53 @@ def load_requests(dataset: str, weights: Optional[list[float]] = None) -> tuple[
 
     # TODO implement multiple users
     # TODO explain weights
-    # TODO remove power!!
-    if "static" in dataset:  # e.g. static_e6
-        if "_e" in dataset:
-            power = int(dataset.split("_e")[1])
+    dataset_path = Path(dataset)
+    if not dataset_path.is_absolute():
+        dataset_dir = Path(_DATA_DIR) / "request_traces"
+        candidate = dataset_dir / dataset
+        if candidate.suffix:
+            dataset_path = candidate
         else:
-            power = 6
-        R_raw = pd.read_csv(f"{_DATA_DIR}/final/wiki_en.csv", parse_dates=True)
-        R_raw["y"] = 10**power
-    elif "normal" in dataset:  # e.g. normal_e6
-        if "_e" in dataset:
-            power = int(dataset.split("_e")[1])
-        else:
-            power = 6
-        R_raw = pd.read_csv(f"{_DATA_DIR}/final/wiki_en.csv", parse_dates=True)
-        rng = np.random.default_rng(42)
-        y = rng.normal(10**power, 10**power / 3, len(R_raw))
-        y[y < 0] = 0
-        R_raw["y"] = y
-    else:
-        R_raw = pd.read_csv(f"{_DATA_DIR}/final/{dataset}.csv", parse_dates=True)
+            with_suffix = candidate.with_suffix(".csv")
+            if with_suffix.exists():
+                dataset_path = with_suffix
+            else:
+                matches = sorted(dataset_dir.glob(f"{dataset}*.csv"))
+                if not matches:
+                    raise FileNotFoundError(
+                        f"Could not locate request trace '{dataset}' under '{dataset_dir}'"
+                    )
+                if len(matches) > 1:
+                    raise FileNotFoundError(
+                        f"Multiple request traces matched '{dataset}' under '{dataset_dir}': "
+                        f"{', '.join(path.name for path in matches)}"
+                    )
+                dataset_path = matches[0]
+
+    if not dataset_path.exists():
+        raise FileNotFoundError(f"Request trace file '{dataset_path}' does not exist")
+
+    R_raw = pd.read_csv(dataset_path)
+
+    # Normalise column names so downstream components can rely on Prophet's
+    # expected schema consisting of ``ds`` (timestamp) and ``y`` (values).
+    if "timestamp" in R_raw.columns and "ds" not in R_raw.columns:
+        R_raw = R_raw.rename(columns={"timestamp": "ds"})
+    if "requests" in R_raw.columns and "y" not in R_raw.columns:
+        R_raw = R_raw.rename(columns={"requests": "y"})
+
+    if "ds" in R_raw.columns:
+        R_raw["ds"] = pd.to_datetime(R_raw["ds"], utc=False)
+        R_raw = R_raw.sort_values("ds").reset_index(drop=True)
+
+    if "y" not in R_raw.columns:
+        raise ValueError(
+            f"Request trace '{dataset_path}' does not contain a 'y' column or a 'requests' column to rename"
+        )
 
     request_scaling_factor = 1 / R_raw["y"].mean()
-    R = np.expand_dims(R_raw["y"].values, axis=1)[-len(DT_INDEX):] * request_scaling_factor
+    values = np.expand_dims(R_raw["y"].values, axis=1)
+    R = values[-len(DT_INDEX) :] * request_scaling_factor
 
     if weights:
         R = np.hstack([R * weight for weight in weights])
