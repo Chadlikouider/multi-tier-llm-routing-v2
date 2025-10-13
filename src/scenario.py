@@ -10,7 +10,7 @@ be made with confidence.
 from __future__ import annotations
 
 import os
-from datetime import timedelta
+from pathlib import Path
 from typing import Dict, Iterable, Literal, Optional
 
 import hydra
@@ -19,7 +19,7 @@ import pandas as pd
 from hydra import compose, initialize
 
 from src.forecasting import generate_bootstrapped_forecast, load_prophet_forecast
-from src.util import DT_INDEX
+from src.util import DT_INDEX, electricitymaps_csv_path, load_electricitymaps_timeseries
 
 # ``_DATA_DIR`` is resolved relative to the repository so the module can be
 # imported from both application code and tests without having to rely on the
@@ -363,22 +363,62 @@ def load_requests(dataset: str, weights: Optional[list[float]] = None) -> tuple[
     return R, R_raw, request_scaling_factor
 
 
+def _resolve_electricitymaps_zone(region: str, split: str) -> str:
+    """Return the Electricity Maps zone identifier for ``region``."""
+
+    try:
+        # ``region`` is already a fully qualified zone identifier.
+        electricitymaps_csv_path(region, split)
+        return region
+    except FileNotFoundError:
+        split_dir = Path(_DATA_DIR) / "electricitymaps" / split
+        if not split_dir.exists():
+            raise FileNotFoundError(
+                f"Electricity Maps split '{split}' not found for region '{region}'"
+            )
+
+        matches = sorted(split_dir.glob(f"*{region}_hourly.csv"))
+        if not matches:
+            raise FileNotFoundError(
+                f"Could not locate Electricity Maps data for region '{region}' in '{split_dir}'"
+            )
+
+        def _extract_year(path: Path) -> int:
+            try:
+                return int(path.stem.split("_")[-2])
+            except (IndexError, ValueError):
+                return -1
+
+        matches.sort(key=_extract_year)
+        latest = matches[-1]
+        return latest.stem.rsplit("_", 2)[0]
+
+
 def load_carbon_intensity(region: str) -> tuple[np.ndarray, pd.DataFrame]:
     """Load carbon intensity data for ``region`` and return scaled values."""
 
-    # adding artificial 2020 bc we do not yet have the data
-    _2020 = pd.read_csv(f'{_DATA_DIR}/electricitymaps/{region}_2021_hourly.csv', index_col=0, parse_dates=True)
-    _2020.index = _2020.index - timedelta(days=365)
-    dfs = [_2020]
+    split = "train"
+    zone = _resolve_electricitymaps_zone(region, split)
+    target_year = DT_INDEX[0].year
+    value_column = "Carbon intensity gCO₂eq/kWh (Life cycle)"
 
-    for year in [2021, 2022, 2023]:
-        year_df = pd.read_csv(f'{_DATA_DIR}/electricitymaps/{region}_{year}_hourly.csv', index_col=0, parse_dates=True)
-        dfs.append(year_df)
-    ci = pd.concat(dfs)
+    try:
+        raw = load_electricitymaps_timeseries(
+            zone,
+            split=split,
+            value_column=value_column,
+            year=target_year,
+        )
+    except FileNotFoundError:
+        raw = load_electricitymaps_timeseries(
+            zone,
+            split=split,
+            value_column=value_column,
+        )
 
-    raw = ci["Carbon Intensity gCO₂eq/kWh (LCA)"].reset_index()
-    raw = raw.rename(columns={"Datetime (UTC)": "ds", "Carbon Intensity gCO₂eq/kWh (LCA)": "y"})
-    raw["y"] = raw["y"].ffill()  # some datasets have missing values
+    raw = raw.set_index("ds").reindex(DT_INDEX)
+    raw["y"] = raw["y"].ffill()
+    raw = raw.rename_axis("ds").reset_index()
 
-    C = raw["y"].values[-len(DT_INDEX):] / 1000000  # gCO₂eq to tCO₂eq
+    C = raw["y"].values[-len(DT_INDEX):] / 1_000_000  # gCO₂eq to tCO₂eq
     return C, raw
