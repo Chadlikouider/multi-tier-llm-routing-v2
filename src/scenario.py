@@ -248,24 +248,31 @@ class Scenario:
 
 
 class Machine:
-    """Description of a deployable hardware configuration."""
+    """A model of a deployable hardware configuration, including performance, power usage, and carbon impact."""
 
     def __init__(
         self,
         name: str,
         performance: dict[str, float],
         embedded_carbon: float,
-        request_scaling_factor: float,  # numerical stability
+        request_scaling_factor: float,  # Numerical stability
         power_usage: Optional[float] = None,
         idle_power_usage: Optional[float] = None,
         max_power_usage: Optional[list[float]] = None,
-        pue: int = 1,
+        pue: float = 1.0,  # Power Usage Effectiveness, typically >1.0
         quality_to_index: Optional[dict[str, int]] = None,
         quality_count: Optional[int] = None,
     ) -> None:
-        # Throughput is normalised so all optimisation inputs are scaled the
-        # same way.  When ``quality_to_index`` is provided we produce a list that
-        # can be indexed directly by a quality integer.
+        # Validate consistency: if quality_to_index is provided, quality_count must be too, and max_power_usage length must match.
+        if quality_to_index is not None:
+            if quality_count is None:
+                raise ValueError(f"Machine '{name}': 'quality_count' must be provided when 'quality_to_index' is used.")
+            if max_power_usage is not None and len(max_power_usage) != quality_count:
+                raise ValueError(f"Machine '{name}': 'max_power_usage' length ({len(max_power_usage)}) must match 'quality_count' ({quality_count}).")
+
+        # Throughput is normalized so all optimization inputs are scaled the same way.
+        # When 'quality_to_index' is provided, we produce a list that can be indexed directly by a quality integer.
+        # Added consistency checks in _normalize_performance to ensure valid quality mappings.
         self.name = name
         self.performance = self._normalize_performance(
             name,
@@ -274,8 +281,7 @@ class Machine:
             quality_to_index,
             quality_count,
         )
-        # Convert to tonnes of CO₂ equivalent to align with other parts of the
-        # model which operate on that unit.
+        # Convert to tonnes of CO₂ equivalent to align with other parts of the model which operate on that unit.
         self.embedded_carbon = embedded_carbon / 1000000  # gCO₂eq to tCO₂eq
 
         # Power models can either be load-independent or load-dependent; both
@@ -288,7 +294,6 @@ class Machine:
 
     def load_independent_power_usage(self) -> float:
         """Return the constant power draw when the simple model is used."""
-
         return self._power_usage
 
     def load_dependent_power_usage(self, q, util: float, n: float = 1) -> float:
@@ -301,21 +306,26 @@ class Machine:
         util:
             Current utilisation ratio, typically between 0 and 1.
         n:
-            Exponent applied to the utilisation value.  A value of ``1`` keeps
+            Exponent applied to the utilisation value. A value of ``1`` keeps
             the relationship linear while larger values bias the curve towards
             high utilisation.
         """
-
+        
         return self._pue * (self._idle_power_usage + (self._max_power_usage[q] - self._idle_power_usage) * util ** n)
 
     @staticmethod
-    def _normalize_performance(machine_name: str,
-                                performance: dict[str, float],
-                                request_scaling_factor: float,
-                                quality_to_index: Optional[dict[str, int]],
-                                quality_count: Optional[int]) -> list[float]:
-        """Map performance dictionaries to consistent list representations."""
+    def _normalize_performance(
+        machine_name: str,
+        performance: dict[str, float],
+        request_scaling_factor: float,
+        quality_to_index: Optional[dict[str, int]],
+        quality_count: Optional[int]
+    ) -> list[float]:
+        """Map performance dictionaries to consistent list representations.
 
+        This ensures compatibility with indexing by quality integer (when applicable)
+        and validates that specified qualities exist in the provided mapping.
+        """
         if quality_to_index is None or quality_count is None:
             return [v * request_scaling_factor for v in performance.values()]
 
@@ -323,7 +333,8 @@ class Machine:
         for quality, throughput in performance.items():
             if quality not in quality_to_index:
                 raise ValueError(
-                    f"Performance specified for unknown quality '{quality}' on machine '{machine_name}'"
+                    f"Performance specified for unknown quality '{quality}' on machine '{machine_name}'. "
+                    f"Ensure '{quality}' is a key in the provided 'quality_to_index' mapping."
                 )
             normalized[quality_to_index[quality]] = throughput * request_scaling_factor
         return normalized
