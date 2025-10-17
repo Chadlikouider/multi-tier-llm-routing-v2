@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Dict, Iterable, Literal, Optional
+from typing import Dict, Iterable, Literal, Optional, List, Any
 
 import hydra
 import numpy as np
@@ -30,10 +30,10 @@ _DATA_DIR = os.path.join(os.path.dirname(__file__), "../data")
 class Scenario:
     """Container describing a full optimisation scenario.
 
-    Parameters are passed directly from the Hydra configuration files used in
-    the experiments.  During initialisation we load the request and carbon
-    intensity data, normalise them for numerical stability, and materialise the
-    machine definitions.
+    Encapsulates all parameters, data, and metadata for simulation, including
+    request forecasts, carbon intensity, user groups, and machine configurations.
+    Data is loaded, normalized for numerical stability, and materialized during
+    initialization, allowing reproducible optimization runs.
     """
 
     def __init__(
@@ -43,25 +43,33 @@ class Scenario:
         region: str,
         vp: int,
         user_groups_scenario: str,
-        user_groups: list[dict],
-        model_qualities: list[str],
-        machines: list[dict],
+        user_groups: List[Dict],
+        model_qualities: List[str],
+        machines: List[Dict],
     ) -> None:
-        # Random numbers are used for synthetic carbon intensity data.  We keep
+        # Validate essential inputs to prevent silent failures
+        if not user_groups:
+            raise ValueError("User groups list cannot be empty.")
+        if not model_qualities:
+            raise ValueError("Model qualities list cannot be empty.")
+        if not machines:
+            raise ValueError("Machines list cannot be empty.")
+
+        # Random numbers are used for synthetic carbon intensity data. We keep
         # a dedicated generator so repeated runs with the same configuration are
         # reproducible.
         self.seed = seed
         self.rng = np.random.default_rng(seed)
 
-        # Configuration identifiers used when serialising results.
+        # Configuration identifiers used when serializing results.
         self.requests_dataset = requests_dataset
         self.region = region
         self.user_groups_scenario = user_groups_scenario
         self.vp = vp
 
-        # User group metadata is re-shaped into numpy friendly structures.  The
-        # weights are used to scale demand data per group, while the QoR targets
-        # are mapped to matrices for fast lookups during optimisation.
+        # User group metadata is reshaped into NumPy-friendly structures. The
+        # weights are used to scale demand data per group, while the QoS targets
+        # are mapped to matrices for fast lookups during optimization.
         self.user_group_weights = [u["weight"] for u in user_groups]
         self.model_qualities = model_qualities
         self.quality_to_index = {quality: idx for idx, quality in enumerate(model_qualities)}
@@ -69,9 +77,9 @@ class Scenario:
         self.slo_lower = self._build_slo_matrix(user_groups, "slo_lower")
         self.slo_upper = self._build_slo_matrix(user_groups, "slo_upper")
 
-        # Load the time series backing the scenario.  ``request_scaling_factor``
+        # Load the time series backing the scenario. 'request_scaling_factor'
         # keeps numerical values in a narrow range to improve solver stability
-        # and is also passed to the machine definitions so their throughput is
+        # and is also passed to machine definitions so their throughput is
         # scaled consistently.
         self.C, self.C_raw = load_carbon_intensity(region)
         self.R, self.R_raw, request_scaling_factor = load_requests(
@@ -81,29 +89,36 @@ class Scenario:
 
         self.machines = self._instantiate_machines(machines, request_scaling_factor)
 
-        # Convenience sets used by the optimisation models to iterate over the
+        # Convenience sets used by the optimization models to iterate over the
         # scenario entities.
         self.U = list(range(len(user_groups)))
         self.Q = list(range(len(model_qualities)))
         self.M = list(range(len(machines)))
-        self.I = list(range(len(DT_INDEX)))  # set of intervals
+        self.I = list(range(len(DT_INDEX)))  # Set of intervals
 
     @property
     def name(self) -> str:
         """Return a descriptive identifier used in file names and logs."""
-
         return f"{self.requests_dataset},{self.region},{self.user_groups_scenario},vp={self.vp}"
 
     def _instantiate_machines(
         self, machines: Iterable[Dict], request_scaling_factor: float
-    ) -> dict[int, "Machine"]:
+    ) -> Dict[int, "Machine"]:
         """Instantiate machines defined in the configuration.
 
         Hydra allows us to specify different machine classes in configuration
         files; we pass the bookkeeping parameters required by :class:`Machine`
         so that custom classes can consume them as well.
-        """
 
+        Parameters
+        ----------
+        machines : Iterable[Dict]
+            Configuration dictionaries for machines.
+        request_scaling_factor : float
+            Scaling factor for throughput normalization.
+        """
+        if not machines:
+            raise ValueError("Machines iterable cannot be empty.")
         return {
             i: hydra.utils.instantiate(
                 machine_cfg,
@@ -115,9 +130,14 @@ class Scenario:
         }
 
     @classmethod
-    def from_config(cls, cfg):
-        """Create a scenario directly from a Hydra configuration object."""
+    def from_config(cls, cfg: Any):
+        """Create a scenario directly from a Hydra configuration object.
 
+        Parameters
+        ----------
+        cfg : Any
+            Hydra config object containing scenario parameters.
+        """
         return cls(
             seed=cfg.seed,
             requests_dataset=cfg.requests_dataset,
@@ -131,10 +151,20 @@ class Scenario:
 
     @classmethod
     def from_name(cls, name: str):
-        """Load a scenario by parsing the string returned from :attr:`name`."""
+        """Load a scenario by parsing the string returned from :attr:`name`.
 
-        requests_dataset, region, user_group_scenario, vp_str = name.split(",")
-        vp = vp_str.split("=")[1]
+        Parameters
+        ----------
+        name : str
+            Serialized scenario name (e.g., "dataset,region,scenario,vp=1").
+        """
+        parts = name.split(",")
+        if len(parts) != 4:
+            raise ValueError(f"Invalid scenario name format: '{name}'. Expected 'dataset,region,scenario,vp=X'.")
+        requests_dataset, region, user_group_scenario, vp_str = parts
+        if "=" not in vp_str:
+            raise ValueError(f"Invalid vp format in scenario name '{name}': missing '='.")
+        vp = int(vp_str.split("=")[1])  # Raises ValueError if not an int
         with initialize(version_base=None, config_path="../config"):
             cfg = compose(
                 config_name="config",
@@ -148,23 +178,20 @@ class Scenario:
         return cls.from_config(cfg)
 
     @property
-    def K(self) -> np.array:
+    def K(self) -> np.ndarray:
         """Return a matrix of machine throughput indexed by quality and machine."""
-
         return np.array([[self.machines[m].performance[q] for m in self.M] for q in self.Q])
 
-    def _build_slo_matrix(self, user_groups: list[dict], key: str) -> np.ndarray:
-        """Convert QoR constraints per user group into a matrix.
+    def _build_slo_matrix(self, user_groups: List[Dict], key: str) -> np.ndarray:
+        """Convert QoS constraints per user group into a matrix.
 
         Parameters
         ----------
-        user_groups:
-            The raw configuration objects containing the QoR definitions.
-        key:
-            Either ``"slo_lower"`` or ``"slo_upper"`` specifying which bounds to
-            extract.
+        user_groups : List[Dict]
+            Raw configuration objects containing QoS definitions.
+        key : str
+            Either "slo_lower" or "slo_upper" specifying which bounds to extract.
         """
-
         matrix = np.zeros((len(user_groups), len(self.model_qualities)))
         expected_keys = set(self.model_qualities)
         for user_idx, user_group in enumerate(user_groups):
@@ -173,7 +200,7 @@ class Scenario:
             if missing:
                 missing_str = ", ".join(sorted(missing))
                 raise ValueError(
-                    f"User group '{user_group.get('name', user_idx)}' is missing QoR targets for: {missing_str}"
+                    f"User group '{user_group.get('name', user_idx)}' is missing QoS targets for: {missing_str}"
                 )
             for quality, value in slo_values.items():
                 if quality not in self.quality_to_index:
@@ -184,10 +211,17 @@ class Scenario:
                 matrix[user_idx, self.quality_to_index[quality]] = value
         return matrix
 
-    def generate_R_hat(self, i: int, kind: Literal["oracle", "yhat", "yhat_lower", "yhat_upper"]) -> np.array:
-        """Generate a demand forecast starting from interval ``i``."""
+    def generate_R_hat(self, i: int, kind: Literal["oracle", "yhat", "yhat_lower", "yhat_upper"]) -> np.ndarray:
+        """Generate a demand forecast starting from interval 'i'.
 
-        # TODO implement multiple users
+        Parameters
+        ----------
+        i : int
+            Starting interval index.
+        kind : Literal["oracle", "yhat", "yhat_lower", "yhat_upper"]
+            Type of forecast to generate.
+        """
+        # Handle different forecast types and static cases
         R = np.copy(self.R)
         if kind == "oracle":
             return R
@@ -195,52 +229,71 @@ class Scenario:
             R.fill(1)
             return R
 
+        # Load and apply forecast
+        fc = self._load_forecast_and_apply_scaling(i)
+        R[i:] = np.expand_dims(fc[kind].values, axis=1)
+
+        return self._apply_user_group_weights(R)
+
+    def _load_forecast_and_apply_scaling(self, i: int) -> Any:
+        """Helper to load and scale Prophet forecast for requests."""
         mean_of_previous_years = self.R_raw["y"][:-8760].mean()
         floor = mean_of_previous_years * 0.9
         cap = mean_of_previous_years * 1.1
-
-        fc = load_prophet_forecast(self.R_raw, i, cache_key=f"R_hat_{self.requests_dataset}_{i}", forecast_params=dict(floor=floor, cap=cap))
-        fc["yhat"] = fc["yhat"] * self.request_scaling_factor
-        fc["yhat_lower"] = fc["yhat_lower"] * self.request_scaling_factor
-        fc["yhat_upper"] = fc["yhat_upper"] * self.request_scaling_factor
-
+        fc = load_prophet_forecast(
+            self.R_raw, i, cache_key=f"R_hat_{self.requests_dataset}_{i}",
+            forecast_params=dict(floor=floor, cap=cap)
+        )
+        fc["yhat"] *= self.request_scaling_factor
+        fc["yhat_lower"] *= self.request_scaling_factor
+        fc["yhat_upper"] *= self.request_scaling_factor
         if self.requests_dataset == "wiki_de":
             floor_hard_cap = np.quantile(self.R_raw["y"][:-8760], 0.01) * self.request_scaling_factor
-            fc.loc[fc["yhat"] < floor_hard_cap, "yhat"] = floor_hard_cap
-            fc.loc[fc["yhat_lower"] < floor_hard_cap, "yhat_lower"] = floor_hard_cap
-            fc.loc[fc["yhat_upper"] < floor_hard_cap, "yhat_upper"] = floor_hard_cap
+            fc.loc[fc["yhat"] < floor_hard_cap, ["yhat", "yhat_lower", "yhat_upper"]] = floor_hard_cap
+        return fc
 
-        R[i:] = np.expand_dims(fc[kind].values, axis=1)
-
+    def _apply_user_group_weights(self, R: np.ndarray) -> np.ndarray:
+        """Helper to apply user group weights to request matrix."""
         # TODO implement multiple users
         if self.user_group_weights:
             R = np.hstack([R * weight for weight in self.user_group_weights])
         return R
 
-    def generate_C_hat(self, i: int, kind: Literal["oracle", "yhat"]) -> np.array:
-        """Return a carbon intensity outlook starting at step ``i``."""
+    def generate_C_hat(self, i: int, kind: Literal["oracle", "yhat"]) -> np.ndarray:
+        """Return a carbon intensity outlook starting at step 'i'.
 
+        Parameters
+        ----------
+        i : int
+            Starting interval index.
+        kind : Literal["oracle", "yhat"]
+            Type of forecast (oracle or prediction).
+        """
         C = np.copy(self.C)
         if kind == "oracle":
             return C
-
-        # We fix LT forecasts to t=0
-        fc = load_prophet_forecast(self.C_raw, i, cache_key=f"C_hat_{self.region}_{i}", forecast_params=dict(flat=True))
-        # C[i:] = fc[kind][i:] / 1000000  # TODO make cleaner. THe [t:] is only necessary because we fix t=0
-        C[i:] = fc[kind] / 1000000  # TODO make cleaner. THe [t:] is only necessary because we fix t=0
+        fc = load_prophet_forecast(
+            self.C_raw, i, cache_key=f"C_hat_{self.region}_{i}", forecast_params=dict(flat=True)
+        )
+        C[i:] = fc[kind] / 1000000  # Converting units
         max_index = min(i + 96, len(DT_INDEX))
+        return self._apply_bootstrapped_forecast(C, fc, i, max_index, kind)
 
+    def _apply_bootstrapped_forecast(
+        self, C: np.ndarray, fc: Any, i: int, max_index: int, kind: str
+    ) -> np.ndarray:
+        """Helper to compute and apply bootstrapped forecast adjustments."""
+        # Calculate historical errors
         history_end = max(0, i)
         history_forecast = fc[kind][:history_end] / 1000000
         history_truth = self.C[:history_end]
         denom = np.where(np.abs(history_forecast) > 1e-9, history_forecast, 1e-9)
         historical_errors = np.where(
-            denom != 0,
-            (history_truth - history_forecast) / denom,
-            0,
+            denom != 0, (history_truth - history_forecast) / denom, 0
         )
         historical_errors = historical_errors[np.isfinite(historical_errors)]
 
+        # Apply bootstrapping to near-term forecast
         C[i:max_index] = generate_bootstrapped_forecast(
             forecast=C[i:max_index], historical_errors=historical_errors, rng=self.rng
         )
@@ -310,7 +363,7 @@ class Machine:
             the relationship linear while larger values bias the curve towards
             high utilisation.
         """
-        
+
         return self._pue * (self._idle_power_usage + (self._max_power_usage[q] - self._idle_power_usage) * util ** n)
 
     @staticmethod
