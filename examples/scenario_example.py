@@ -100,7 +100,7 @@ def demonstrate_scenario(dataset_name: str, region: str) -> None:
     user_groups = [
         {
             "name": "best-effort",
-            "weight": 1.0,
+            "weight": 0.25,
             "slo_lower": {
                 "tier_0": 1.0,
                 "tier_1": 0.75,
@@ -113,6 +113,25 @@ def demonstrate_scenario(dataset_name: str, region: str) -> None:
                 "tier_1": 0.25,
                 "tier_2": 0.5,
                 "tier_3": 0.75,
+                "tier_4": 1.0,
+            },
+        },
+
+        {
+            "name": "premium",
+            "weight": 0.75,
+            "slo_lower": {
+                "tier_0": 1.0,
+                "tier_1": 0.9,
+                "tier_2": 0.75,
+                "tier_3": 0.6,
+                "tier_4": 0.4,
+            },
+            "slo_upper": {
+                "tier_0": 0.6,
+                "tier_1": 0.75,
+                "tier_2": 0.9,
+                "tier_3": 1.0,
                 "tier_4": 1.0,
             },
         }
