@@ -82,9 +82,12 @@ class Scenario:
         # and is also passed to machine definitions so their throughput is
         # scaled consistently.
         self.C, self.C_raw = load_carbon_intensity(region)
+        print("C_raw shape:", self.C_raw.shape)
+
         self.R, self.R_raw, request_scaling_factor = load_requests(
             requests_dataset, weights=self.user_group_weights
         )
+        print("R_raw shape:", self.R_raw.shape)
         self.request_scaling_factor = request_scaling_factor
 
         self.machines = self._instantiate_machines(machines, request_scaling_factor)
@@ -237,9 +240,10 @@ class Scenario:
 
     def _load_forecast_and_apply_scaling(self, i: int) -> Any:
         """Helper to load and scale Prophet forecast for requests."""
-        mean_of_previous_years = self.R_raw["y"][:-8760].mean()
+        mean_of_previous_years = self.R_raw["y"][:-len(DT_INDEX)].mean()
         floor = mean_of_previous_years * 0.9
         cap = mean_of_previous_years * 1.1
+        
         fc = load_prophet_forecast(
             self.R_raw, i, cache_key=f"R_hat_{self.requests_dataset}_{i}",
             forecast_params=dict(floor=floor, cap=cap)
@@ -248,7 +252,7 @@ class Scenario:
         fc["yhat_lower"] *= self.request_scaling_factor
         fc["yhat_upper"] *= self.request_scaling_factor
         if self.requests_dataset == "wiki_de":
-            floor_hard_cap = np.quantile(self.R_raw["y"][:-8760], 0.01) * self.request_scaling_factor
+            floor_hard_cap = np.quantile(self.R_raw["y"][:-len(DT_INDEX)], 0.01) * self.request_scaling_factor
             fc.loc[fc["yhat"] < floor_hard_cap, ["yhat", "yhat_lower", "yhat_upper"]] = floor_hard_cap
         return fc
 
@@ -271,10 +275,14 @@ class Scenario:
         """
         C = np.copy(self.C)
         if kind == "oracle":
+            print("shape of C:", C.shape)
             return C
+
+        
         fc = load_prophet_forecast(
             self.C_raw, i, cache_key=f"C_hat_{self.region}_{i}", forecast_params=dict(flat=True)
         )
+        
         C[i:] = fc[kind] / 1000000  # Converting units
         max_index = min(i + 96, len(DT_INDEX))
         return self._apply_bootstrapped_forecast(C, fc, i, max_index, kind)
@@ -508,5 +516,8 @@ def load_carbon_intensity(region: str) -> tuple[np.ndarray, pd.DataFrame]:
     raw["y"] = raw["y"].ffill()
     raw = raw.rename_axis("ds").reset_index()
 
-    C = raw["y"].values[-len(DT_INDEX):] / 1_000_000  # gCO₂eq to tCO₂eq
+    #C = raw["y"].values[-len(DT_INDEX):] / 1_000_000  # gCO₂eq to tCO₂eq
+    C_values = raw["y"].values[-len(DT_INDEX):] / 1_000_000
+    C = np.expand_dims(C_values, axis=1)  # Now shape (8760, 1)
+    
     return C, raw
