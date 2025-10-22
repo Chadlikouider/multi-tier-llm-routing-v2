@@ -44,11 +44,11 @@ def main() -> None:
     # beginning (interval i=0). This will load from cache or generate new
     # Prophet models as needed via load_prophet_forecast in forecasting.py.
     print("Generating/Loading request forecast (oracle)...")
-    R_forecast_oracle = scenario.generate_R_hat(i=0, kind="oracle")
+    R_forecast_oracle = scenario.generate_R_hat(i=1, kind="oracle")
     print("Request forecast (oracle) shape:", R_forecast_oracle.shape)
 
     print("Generating/Loading carbon intensity forecast (oracle)...")
-    C_forecast_oracle = scenario.generate_C_hat(i=0, kind="oracle")
+    C_forecast_oracle = scenario.generate_C_hat(i=1, kind="oracle")
     print("Carbon forecast (oracle) length:", len(C_forecast_oracle))
 
     # Example for predicted forecasts (using yhat for demonstration).
@@ -57,14 +57,14 @@ def main() -> None:
     # will load/generate the Prophet model and apply caching with the updated key.
     print("Generating/Loading request forecast (predicted, yhat)...")
     try:
-        R_forecast_pred = scenario.generate_R_hat(i=0, kind="yhat")  # Changed to a safe i=0 to avoid issues with model fitting on insufficient data
+        R_forecast_pred = scenario.generate_R_hat(i=12, kind="yhat")  # Changed to a safe i=0 to avoid issues with model fitting on insufficient data
         print("Request forecast (predicted, yhat) shape:", R_forecast_pred.shape)
     except (IndexError, ValueError) as e:
         print(f"Request forecast (predicted): Error - {e}. Check data length or valid i values.")
 
     print("Generating/Loading carbon intensity forecast (predicted, yhat)...")
     try:
-        C_forecast_pred = scenario.generate_C_hat(i=0, kind="yhat")  # Changed to a safe i=0 to avoid issues with model fitting on insufficient data
+        C_forecast_pred = scenario.generate_C_hat(i=1, kind="yhat")  # Changed to a safe i=0 to avoid issues with model fitting on insufficient data
         print("Carbon forecast (predicted, yhat) length:", len(C_forecast_pred))
     except (IndexError, ValueError) as e:
         print(f"Carbon forecast (predicted): Error - {e}. Check data length or valid i values.")

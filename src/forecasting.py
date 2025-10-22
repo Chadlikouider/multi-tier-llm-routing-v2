@@ -84,7 +84,10 @@ def generate_prophet_forecast(
 
     # ``cutoff`` represents the location where the forecast horizon begins.
     cutoff = -len(DT_INDEX) + i
+    print("cutoff:", cutoff)
     train = data[:cutoff].copy()
+    
+    print("shape of train:", train)
 
     # Configure the growth model depending on the requested bounds.  Logistic
     # growth requires ``cap`` and ``floor`` columns, whereas ``flat`` simply
@@ -129,3 +132,4 @@ def generate_bootstrapped_forecast(
     sampled_errors = rng.choice(historical_errors, size=len(forecast), replace=True)
     sampled_errors = np.clip(sampled_errors, -0.95, 5.0)
     return forecast * (1 + sampled_errors)
+
