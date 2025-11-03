@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Constants
-YEAR = 2023
+YEAR = 2024
 START_OF_YEAR = datetime(YEAR, 1, 1)
 END_OF_YEAR = datetime(YEAR + 1, 1, 1)
 HOURLY_INDEX = pd.date_range(start=START_OF_YEAR, end=END_OF_YEAR, freq="h", inclusive="left")
@@ -13,7 +13,7 @@ BASE_REQUESTS = 1_000
 MEAN_REQUESTS = 1_000
 STD_REQUESTS = int(MEAN_REQUESTS / 3)
 POISSON_LAMBDA = 1_000
-SEED = 42
+SEED = 69
 
 _OUTPUT_DIR = Path(__file__).resolve().parent / "request_traces"
 _RNG = np.random.default_rng(SEED)

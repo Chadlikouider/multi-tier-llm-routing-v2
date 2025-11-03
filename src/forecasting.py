@@ -87,8 +87,8 @@ def generate_prophet_forecast(
     print("cutoff:", cutoff)
     train = data[:cutoff].copy()
     
-    print("shape of train:", train)
-
+    print("values of train:", train)
+    
     # Configure the growth model depending on the requested bounds.  Logistic
     # growth requires ``cap`` and ``floor`` columns, whereas ``flat`` simply
     # holds the series constant outside the observed range.

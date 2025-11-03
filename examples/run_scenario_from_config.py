@@ -57,7 +57,7 @@ def main() -> None:
     # will load/generate the Prophet model and apply caching with the updated key.
     print("Generating/Loading request forecast (predicted, yhat)...")
     try:
-        R_forecast_pred = scenario.generate_R_hat(i=12, kind="yhat")  # Changed to a safe i=0 to avoid issues with model fitting on insufficient data
+        R_forecast_pred = scenario.generate_R_hat(i=1, kind="yhat")  # Changed to a safe i=0 to avoid issues with model fitting on insufficient data
         print("Request forecast (predicted, yhat) shape:", R_forecast_pred.shape)
     except (IndexError, ValueError) as e:
         print(f"Request forecast (predicted): Error - {e}. Check data length or valid i values.")

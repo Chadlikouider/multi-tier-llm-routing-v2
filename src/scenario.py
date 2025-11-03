@@ -255,6 +255,7 @@ class Scenario:
         """
         C = np.copy(self.C)
         if kind == "oracle":
+            
             return C
 
         
@@ -263,7 +264,7 @@ class Scenario:
         )
         
         print("shape of fc[yhat]:", fc[kind])
-        C[i:] = np.expand_dims(fc[kind].values, axis=1) / 1_000_000 # Converting units
+        C[i:] = fc[kind] / 1_000_000 # Converting units
         
         max_index = min(i + 1, len(DT_INDEX))
         return self._apply_bootstrapped_forecast(C, fc, i, max_index, kind)
@@ -382,123 +383,156 @@ class Machine:
         return normalized
 
 
-def load_requests(dataset: str, weights: Optional[list[float]] = None) -> tuple[np.ndarray, pd.DataFrame, float]:
-    """Load the request dataset and normalise it for numerical stability."""
+def load_requests(
+    dataset: str,
+    weights: Optional[list[float]] = None,
+    split: str = "train"  # kept for compatibility, ignored for 2024
+) -> tuple[np.ndarray, pd.DataFrame, float]:
+    """
+    Load request traces with train/test split logic:
+      - 2022 & 2023 → request_traces/train/
+      - 2024       → request_traces/test/
 
-    # TODO implement multiple users
-    # TODO explain weights
-    dataset_path = Path(dataset)
-    if not dataset_path.is_absolute():
-        dataset_dir = Path(_DATA_DIR) / "request_traces"
-        candidate = dataset_dir / dataset
-        if candidate.suffix:
-            dataset_path = candidate
-        else:
-            with_suffix = candidate.with_suffix(".csv")
-            if with_suffix.exists():
-                dataset_path = with_suffix
-            else:
-                matches = sorted(dataset_dir.glob(f"{dataset}*.csv"))
-                if not matches:
-                    raise FileNotFoundError(
-                        f"Could not locate request trace '{dataset}' under '{dataset_dir}'"
-                    )
-                if len(matches) > 1:
-                    raise FileNotFoundError(
-                        f"Multiple request traces matched '{dataset}' under '{dataset_dir}': "
-                        f"{', '.join(path.name for path in matches)}"
-                    )
-                dataset_path = matches[0]
+    Parameters
+    ----------
+    dataset : str
+        Base name without year, e.g. "normal_requests", "static_requests", "synthetic_requests"
+    weights : list[float] | None
+        If given, duplicate the 2024 trace scaled by each weight.
+    split : str
+        Ignored (kept for API compatibility). 2024 always comes from 'test'.
 
-    if not dataset_path.exists():
-        raise FileNotFoundError(f"Request trace file '{dataset_path}' does not exist")
+    Returns
+    -------
+    R : np.ndarray
+        Scaled 2024 trace(s), shape (8784, n_users) if weights given.
+    R_raw : pd.DataFrame
+        Full 2022-2023-2024 series with columns `ds` and `y`.
+    request_scaling_factor : float
+        1 / mean(y) over full 2022-2024.
+    """
+    base_dir = Path(_DATA_DIR) / "request_traces"
+    train_dir = base_dir / "train"
+    test_dir  = base_dir / "test"
 
-    R_raw = pd.read_csv(dataset_path)
+    # ------------------------------------------------------------------ #
+    # 1. Load 2022 & 2023 from train/
+    # ------------------------------------------------------------------ #
+    dfs = []
+    for year in [2022, 2023]:
+        path = train_dir / f"{dataset}_{year}.csv"
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing train file: {path}")
+        df = pd.read_csv(path, parse_dates=True)
+        dfs.append(df)
 
-    # Normalise column names so downstream components can rely on Prophet's
-    # expected schema consisting of ``ds`` (timestamp) and ``y`` (values).
-    if "timestamp" in R_raw.columns and "ds" not in R_raw.columns:
-        R_raw = R_raw.rename(columns={"timestamp": "ds"})
-    if "requests" in R_raw.columns and "y" not in R_raw.columns:
-        R_raw = R_raw.rename(columns={"requests": "y"})
+    # ------------------------------------------------------------------ #
+    # 2. Append 2024 from test/
+    # ------------------------------------------------------------------ #
+    path_2024 = test_dir / f"{dataset}_2024.csv"
+    if not path_2024.is_file():
+        raise FileNotFoundError(f"Missing test file (2024): {path_2024}")
+    dfs.append(pd.read_csv(path_2024, parse_dates=True))
 
-    if "ds" in R_raw.columns:
-        R_raw["ds"] = pd.to_datetime(R_raw["ds"], utc=False)
-        R_raw = R_raw.sort_values("ds").reset_index(drop=True)
-
+    # ------------------------------------------------------------------ #
+    # 3. Concatenate → R_raw
+    # ------------------------------------------------------------------ #
+    R_raw = pd.concat(dfs, ignore_index=True)
+    R_raw = R_raw.rename(
+            columns={"timestamp": "ds",
+                    "requests": "y",
+            }
+        )  # ensure column name
     if "y" not in R_raw.columns:
-        raise ValueError(
-            f"Request trace '{dataset_path}' does not contain a 'y' column or a 'requests' column to rename"
-        )
+        raise ValueError("CSV must contain a 'y' column with request counts")
 
-    request_scaling_factor = 1 / R_raw["y"].mean()
-    values = np.expand_dims(R_raw["y"].values, axis=1)
-    R = values[-len(DT_INDEX) :] * request_scaling_factor
+    # ------------------------------------------------------------------ #
+    # 4. Scaling factor over FULL 2022-2024
+    # ------------------------------------------------------------------ #
+    request_scaling_factor = 1.0 / R_raw["y"].mean()
 
+    # ------------------------------------------------------------------ #
+    # 5. Slice last 8784 rows (2024) → R
+    # ------------------------------------------------------------------ #
+    y_2024 = R_raw["y"].values[-len(DT_INDEX):] * request_scaling_factor
+    R = np.expand_dims(y_2024, axis=1)  # shape (8784, 1)
+
+    # ------------------------------------------------------------------ #
+    # 6. Apply user weights (multiple traces)
+    # ------------------------------------------------------------------ #
     if weights:
-        R = np.hstack([R * weight for weight in weights])
+        R = np.hstack([R * w for w in weights])
+
     return R, R_raw, request_scaling_factor
 
 
-def _resolve_electricitymaps_zone(region: str, split: str) -> str:
-    """Return the Electricity Maps zone identifier for ``region``."""
+def load_carbon_intensity(region: str):
+    """
+    Load carbon-intensity data for a region.
+    - 2022 & 2023 are always taken from the *train* directory
+    - 2024 is always taken from the *test* directory
+    - The function works regardless of the `split` argument.
 
-    try:
-        # ``region`` is already a fully qualified zone identifier.
-        electricitymaps_csv_path(region, split)
-        return region
-    except FileNotFoundError:
-        split_dir = Path(_DATA_DIR) / "electricitymaps" / split
-        if not split_dir.exists():
-            raise FileNotFoundError(
-                f"Electricity Maps split '{split}' not found for region '{region}'"
-            )
+    Parameters
+    ----------
+    region : str
+        e.g. "DE", "US-NY-NYISO"
+    split : str, default "train"
+        Kept for API compatibility – only the *test* folder is used for 2024.
 
-        matches = sorted(split_dir.glob(f"*{region}_hourly.csv"))
-        if not matches:
-            raise FileNotFoundError(
-                f"Could not locate Electricity Maps data for region '{region}' in '{split_dir}'"
-            )
+    Returns
+    -------
+    C : np.ndarray
+        2024 carbon intensity (8 784 values) in tCO₂eq/kWh.
+    raw : pd.DataFrame
+        Full 2022-2024 series with columns `ds` (UTC) and `y` (gCO₂eq/kWh, f-filled).
+    """
+    base_dir = Path(_DATA_DIR) / "electricitymaps"
 
-        def _extract_year(path: Path) -> int:
-            try:
-                return int(path.stem.split("_")[-2])
-            except (IndexError, ValueError):
-                return -1
-
-        matches.sort(key=_extract_year)
-        latest = matches[-1]
-        return latest.stem.rsplit("_", 2)[0]
-
-
-def load_carbon_intensity(region: str) -> tuple[np.ndarray, pd.DataFrame]:
-    """Load carbon intensity data for ``region`` and return scaled values."""
-
-    split = "train"
-    zone = _resolve_electricitymaps_zone(region, split)
-    target_year = DT_INDEX[0].year
-    value_column = "Carbon intensity gCO₂eq/kWh (Life cycle)"
-
-    try:
-        raw = load_electricitymaps_timeseries(
-            zone,
-            split=split,
-            value_column=value_column,
-            year=target_year,
-        )
-    except FileNotFoundError:
-        raw = load_electricitymaps_timeseries(
-            zone,
-            split=split,
-            value_column=value_column,
+    # ------------------------------------------------------------------ #
+    # 1. Load 2022 & 2023 from *train*
+    # ------------------------------------------------------------------ #
+    train_dir = base_dir / "train"
+    dfs = []
+    for year in [2022, 2023]:
+        p = train_dir / f"{region}_{year}_hourly.csv"
+        if not p.is_file():
+            raise FileNotFoundError(f"Missing train file: {p}")
+        dfs.append(
+            pd.read_csv(p, index_col=0, parse_dates=True)
         )
 
-    raw = raw.set_index("ds").reindex(DT_INDEX)
-    raw["y"] = raw["y"].ffill()
-    raw = raw.rename_axis("ds").reset_index()
+    # ------------------------------------------------------------------ #
+    # 2. Append 2024 from *test*
+    # ------------------------------------------------------------------ #
+    test_dir = base_dir / "test"
+    p2024 = test_dir / f"{region}_2024_hourly.csv"
+    if not p2024.is_file():
+        raise FileNotFoundError(f"Missing test file (2024): {p2024}")
 
-    #C = raw["y"].values[-len(DT_INDEX):] / 1_000_000  # gCO₂eq to tCO₂eq
-    C_values = raw["y"].values[-len(DT_INDEX):] / 1_000_000
-    C = np.expand_dims(C_values, axis=1)  # Now shape (8760, 1)
+    dfs.append(pd.read_csv(p2024, index_col=0, parse_dates=True))
+
+    # ------------------------------------------------------------------ #
+    # 3. Concatenate everything
+    # ------------------------------------------------------------------ #
+    ci = pd.concat(dfs, axis=0)
+
+    # ------------------------------------------------------------------ #
+    # 4. Build `raw` (full series)
+    # ------------------------------------------------------------------ #
+    raw = ci["Carbon intensity gCO₂eq/kWh (Life cycle)"].reset_index()
+    raw = raw.rename(
+        columns={
+            "Datetime (UTC)": "ds",
+            "Carbon intensity gCO₂eq/kWh (Life cycle)": "y",
+        }
+    )
+    raw["y"] = raw["y"].ffill()          # forward-fill missing values
+
+    # ------------------------------------------------------------------ #
+    # 5. Slice the last 8 784 rows → C  (g → t conversion)
+    # ------------------------------------------------------------------ #
     
+    C = raw["y"].values[-len(DT_INDEX):] / 1_000_000
+
     return C, raw
