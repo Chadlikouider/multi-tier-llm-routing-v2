@@ -1,8 +1,6 @@
-"""Shared utilities for time-series processing across the project."""
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pandas as pd
 
@@ -11,90 +9,61 @@ import pandas as pd
 # providing sufficient coverage for seasonal patterns in the historical data.
 DT_INDEX = pd.date_range("2024-01-01", periods=24 * 365, freq="h")
 
-_ELECTRICITYMAPS_DIR = (Path(__file__).resolve().parent / ".." / "data" / "electricitymaps").resolve()
 
 
-def _extract_year_from_filename(path: Path) -> int:
-    """Extract the four digit year from an Electricity Maps CSV filename."""
-
-    for part in path.stem.split("_"):
-        if part.isdigit() and len(part) == 4:
-            return int(part)
-    raise ValueError(f"Could not determine year from Electricity Maps filename '{path.name}'")
 
 
-def electricitymaps_csv_path(zone: str, split: str = "train", year: int | None = None) -> Path:
-    """Return the path to an Electricity Maps CSV file for ``zone`` and ``split``.
-
-    Parameters
-    ----------
-    zone:
-        Electricity Maps zone identifier, e.g. ``"US-CAL-CISO"``.
-    split:
-        Dataset split folder to load data from (usually ``"train"`` or ``"test"``).
-    year:
-        Optional four digit year.  When omitted the most recent available year is
-        returned.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the requested split or zone file does not exist on disk.
-    ValueError
-        If the year cannot be parsed from a matching file name.
+def get_validity_periods(window: list[int],
+                         vp: int,
+                         past: bool = True,
+                         future: bool = True) -> list[list[int]]:
     """
+    Generate lists of index ranges (validity periods) within a given time window.
 
-    split_dir = _ELECTRICITYMAPS_DIR / split
-    if not split_dir.exists():
-        raise FileNotFoundError(f"Electricity Maps split '{split}' not found at {split_dir}")
+    Args:
+        window (list[int]): A two-element list [start_idx, end_idx] defining the 
+            inclusive range of valid indices (the current time window).
+        vp (int): The validity period length — the number of consecutive indices 
+            in each period.
+        past (bool, optional): Whether to include periods that start before the 
+            current window (historical context). Defaults to True.
+        future (bool, optional): Whether to include periods that end after the 
+            current window (future projections). Defaults to True.
 
-    matches = sorted(split_dir.glob(f"{zone}_*_hourly.csv"))
-    if not matches:
-        raise FileNotFoundError(f"No Electricity Maps files found for zone '{zone}' in '{split_dir}'")
+    Returns:
+        list[list[int]]: A list of index lists, where each inner list represents 
+        a consecutive range of indices (a validity period) within the DT_INDEX timeline.
 
-    if year is not None:
-        matches = [path for path in matches if f"_{year}_" in path.stem]
-        if not matches:
-            raise FileNotFoundError(
-                f"No Electricity Maps files found for zone '{zone}' and year '{year}' in '{split_dir}'"
-            )
+    Description:
+        The function slides a window of length `vp` across the full range of `DT_INDEX`,
+        constructing lists of consecutive indices (from `start` to `end`) that 
+        overlap with the specified `window`. 
 
-    if len(matches) > 1:
-        matches.sort(key=_extract_year_from_filename)
-    return matches[-1]
+        It respects the `past` and `future` flags:
+          - If `past=False`, periods that start before the given window are excluded.
+          - If `future=False`, iteration stops once the end index exceeds the window.
 
+        The iteration halts early when the start index moves beyond the end of the window 
+        to improve efficiency.
 
-def load_electricitymaps_timeseries(
-    zone: str,
-    split: str = "train",
-    value_column: str = "Carbon intensity gCO₂eq/kWh (direct)",
-    year: int | None = None,
-) -> pd.DataFrame:
-    """Load Electricity Maps carbon-intensity data as a prophet-compatible frame.
-
-    The returned data frame contains ``ds`` and ``y`` columns sorted by timestamp
-    and aligned to :data:`DT_INDEX` to guarantee compatibility with the
-    forecasting utilities.  When ``year`` is not provided the latest available
-    dataset for the requested ``zone`` is used.
+    Example:
+        Suppose DT_INDEX = range(10), window = [3, 6], vp = 3
+        get_validity_periods(window, vp)
+        ➜ [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]]
     """
-
-    csv_path = electricitymaps_csv_path(zone, split, year)
-
-    df = pd.read_csv(csv_path, parse_dates=["Datetime (UTC)"])
-    if value_column not in df.columns:
-        raise KeyError(
-            f"Column '{value_column}' not present in Electricity Maps file '{csv_path.name}'"
-        )
-
-    timeseries = (
-        df.rename(columns={"Datetime (UTC)": "ds", value_column: "y"})[["ds", "y"]]
-        .sort_values("ds")
-        .set_index("ds")
-    )
-
-    aligned = timeseries.reindex(DT_INDEX)
-    aligned = aligned.dropna(subset=["y"]).rename_axis("ds").reset_index()
-    return aligned
+    periods = []
+    for end in range(len(DT_INDEX)):
+        start = end - vp + 1
+        l = list(range(start, end + 1))
+        if not future and end > window[-1]:
+            break
+        if 0 <= start <= window[-1] and end >= window[0]:
+            if past or start >= window[0]:
+                periods.append(l)
+        if start > window[-1]:
+            break
+    return periods
 
 
-__all__ = ["DT_INDEX", "electricitymaps_csv_path", "load_electricitymaps_timeseries"]
+
+__all__ = ["DT_INDEX", "get_validity_periods"]

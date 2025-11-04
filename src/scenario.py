@@ -19,7 +19,7 @@ import pandas as pd
 from hydra import compose, initialize
 
 from src.forecasting import generate_bootstrapped_forecast, load_prophet_forecast
-from src.util import DT_INDEX, electricitymaps_csv_path, load_electricitymaps_timeseries
+from src.util import DT_INDEX
 
 # ``_DATA_DIR`` is resolved relative to the repository so the module can be
 # imported from both application code and tests without having to rely on the
@@ -263,7 +263,7 @@ class Scenario:
             self.C_raw, i, cache_key=f"C_hat_{self.region}_{i}", forecast_params=dict(flat=True)
         )
         
-        print("shape of fc[yhat]:", fc[kind])
+        # print("shape of fc[yhat]:", fc[kind])
         C[i:] = fc[kind] / 1_000_000 # Converting units
         
         max_index = min(i + 1, len(DT_INDEX))
@@ -454,9 +454,9 @@ def load_requests(
     # ------------------------------------------------------------------ #
     # 5. Slice last 8784 rows (2024) → R
     # ------------------------------------------------------------------ #
-    y_2024 = R_raw["y"].values[-len(DT_INDEX):] * request_scaling_factor
-    R = np.expand_dims(y_2024, axis=1)  # shape (8784, 1)
-
+    # y_2024 = R_raw["y"].values[-len(DT_INDEX):] * request_scaling_factor
+    # R = np.expand_dims(y_2024, axis=1)  # shape (8784, 1)
+    R = np.expand_dims(R_raw["y"].values, axis=1)[-len(DT_INDEX):] * request_scaling_factor
     # ------------------------------------------------------------------ #
     # 6. Apply user weights (multiple traces)
     # ------------------------------------------------------------------ #
