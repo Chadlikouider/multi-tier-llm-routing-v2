@@ -1,15 +1,15 @@
 defaults:
   - _self_
   - optimizer: qt
-  - user_groups: p0
+  - user_groups: p50
 
 seed: 42
-qor_target: 0.5
+qor_target: 0.6
 
 requests_dataset: poisson_requests     #"normal_requests", "static_requests", "synthetic_requests"
 region: CA-ON
 
-vp: 1  # validity period duration
+vp: 1 # validity period duration
 
 model_qualities:
   - tier_0
