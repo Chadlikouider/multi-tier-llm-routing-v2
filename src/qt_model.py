@@ -350,9 +350,9 @@ if __name__ == "__main__":
     print("=" * 60)
     
     # ---- Minimize emissions (QoR >= 0.5) ----
-    print("\n1. MINIMIZE EMISSIONS (QoR >= 0.5)")
+    print("\n1. MINIMIZE EMISSIONS")
     print("-" * 50)
-    min_res = solver.minimize_emissions(qor_target=0.5, window=window, R_hat=R_hat, C_hat=C_hat)
+    min_res = solver.minimize_emissions(qor_target=0.4, window=window, R_hat=R_hat, C_hat=C_hat)
     print(f" Runtime     : {min_res['runtime']:.3f} s")
     print(f" LP Status   : {min_res['lp_status']}")
     print(f" Emissions   : {min_res['emissions']:_.0f} gCO₂e")

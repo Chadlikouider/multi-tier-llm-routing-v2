@@ -9,21 +9,22 @@ from src.util import get_validity_periods
 # Helpers
 # ----------------------------------------------------------------------
 def _cheapest_machine(scenario: Scenario, i: int, q_idx: int, C_hat: np.ndarray) -> int:
-    """Find the machine with lowest emission cost per request for tier q at interval i."""
+    """Find the machine with lowest operational emission cost per request for tier q at interval i."""
     best_m, best_cost = None, np.inf
     for m_idx, m in enumerate(scenario.M):
         perf = scenario.machines[m].performance[scenario.Q[q_idx]]
         if perf <= 0:
             continue
         power = scenario.machines[m].load_independent_power_usage()
-        emissions = power * C_hat[i] + scenario.machines[m].embedded_carbon
+        # Only operational emissions
+        emissions = power * C_hat[i]
         cost = emissions / perf
+        
         if cost < best_cost:
             best_cost, best_m = cost, m_idx
     if best_m is None:
         raise ValueError(f"No valid machine for tier {q_idx} at interval {i}")
     return best_m
-
 
 def _machine_cost(scenario: Scenario, m_idx: int, i: int, C_hat: np.ndarray) -> float:
     """Emission cost of one machine m at interval i."""
@@ -133,6 +134,7 @@ class QtModel:
                 weighted_cost = 0.0
                 for i in vp:
                     m_idx = _cheapest_machine(S, i, q_idx, C_hat)
+                    
                     perf = S.machines[S.M[m_idx]].performance[S.Q[q_idx]]
                     if perf > 0:
                         machine = S.machines[S.M[m_idx]]
@@ -150,16 +152,17 @@ class QtModel:
 
                 lo = np.array([S.slo_lower[u_idx, q_idx] for q_idx in range(len(S.Q))])
                 hi = np.array([S.slo_upper[u_idx, q_idx] for q_idx in range(len(S.Q))])
-
+                
                 # Expand bounds by err_max
                 den = np.abs(lo - hi)
+
                 allowed_lo = np.maximum(0.0, hi - err_max * den)
                 allowed_hi = np.minimum(1.0, hi + err_max * den)
-
+                print(f"allowed_lo: {allowed_lo}")
                 # Start with lower bounds
                 fracs = allowed_lo.copy()
                 remaining = 1.0 - fracs.sum()
-
+                
                 if remaining < -1e-9:
                     # Infeasible: sum(lo) > 1 → scale down
                     print(f"WARNING: Infeasible SLO lowers for user {u_idx} in VP {vp}; scaling down.")
@@ -184,6 +187,7 @@ class QtModel:
                 for i in vp:
                     if R_hat[i, u_idx] > 0:
                         a[i, u_idx, :] = fracs * R_hat[i, u_idx]
+                        
 
         # 4. Deploy machines for each interval in window - FIXED LOGIC
         # Use interval-specific cheapest machine, not VP average
@@ -307,7 +311,7 @@ if __name__ == "__main__":
     # ---- Minimize emissions (QoR >= 0.5) ----
     print("\n1. MINIMIZE EMISSIONS (QoR >= 0.5)")
     print("-" * 50)
-    min_res = solver.minimize_emissions(qor_target=0.5, window=window, R_hat=R_hat, C_hat=C_hat)
+    min_res = solver.minimize_emissions(qor_target=0.6, window=window, R_hat=R_hat, C_hat=C_hat)
     print(f" Runtime : {min_res['runtime']:.3f} s")
     print(f" Emissions : {min_res['emissions']:_.0f} gCO₂e")
     print(f" Achieved QoR : {min_res['qor_achieved']:.4f}")
