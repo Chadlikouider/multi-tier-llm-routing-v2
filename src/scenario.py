@@ -325,7 +325,7 @@ class Machine:
             quality_count,
         )
         # Convert to tonnes of CO₂ equivalent to align with other parts of the model which operate on that unit.
-        self.embedded_carbon = embedded_carbon / 1000000  # gCO₂eq to tCO₂eq
+        self.embedded_carbon = embedded_carbon #/ 1000000  # gCO₂eq to tCO₂eq
 
         # Power models can either be load-independent or load-dependent; both
         # representations are supported simultaneously and consumers can choose
