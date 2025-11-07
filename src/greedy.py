@@ -158,7 +158,6 @@ class QtModel:
 
                 allowed_lo = np.maximum(0.0, hi - err_max * den)
                 allowed_hi = np.minimum(1.0, hi + err_max * den)
-                print(f"allowed_lo: {allowed_lo}")
                 # Start with lower bounds
                 fracs = allowed_lo.copy()
                 remaining = 1.0 - fracs.sum()

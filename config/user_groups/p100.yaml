@@ -7,10 +7,10 @@ groups:
       tier_1: 0
       tier_2: 0
       tier_3: 0
-      tier_4: 1
+      tier_4: 0
     slo_upper:
       tier_0: 0
       tier_1: 0
-      tier_2: 0
-      tier_3: 0
-      tier_4: 1
+      tier_2: 0.2
+      tier_3: 0.4
+      tier_4: 0.4

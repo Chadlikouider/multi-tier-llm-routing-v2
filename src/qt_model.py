@@ -342,6 +342,7 @@ if __name__ == "__main__":
         cfg = compose(config_name="config")
     scenario = Scenario.from_config(cfg)
     R_hat = scenario.R * 1000
+    
     C_hat = scenario.C * 1_000_000
     solver = QtModel(scenario)
     window = scenario.I[:1]
@@ -352,7 +353,7 @@ if __name__ == "__main__":
     # ---- Minimize emissions (QoR >= 0.5) ----
     print("\n1. MINIMIZE EMISSIONS")
     print("-" * 50)
-    min_res = solver.minimize_emissions(qor_target=0.4, window=window, R_hat=R_hat, C_hat=C_hat)
+    min_res = solver.minimize_emissions(qor_target=0.6, window=window, R_hat=R_hat, C_hat=C_hat)
     print(f" Runtime     : {min_res['runtime']:.3f} s")
     print(f" LP Status   : {min_res['lp_status']}")
     print(f" Emissions   : {min_res['emissions']:_.0f} gCO₂e")

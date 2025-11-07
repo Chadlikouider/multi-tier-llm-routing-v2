@@ -1,0 +1,2314 @@
+{
+  "results": [
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999974707954,
+      "emissions": 8401.940337,
+      "runtime": 0.4930543899536133,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8401.940337,
+      "timestamp": "2024-01-01T00:00:00",
+      "hour_of_year": 1,
+      "day_of_year": 1,
+      "hour_of_day": 0,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.600000002708702,
+      "emissions": 8478.0571313,
+      "runtime": 0.4482278823852539,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8478.0571313,
+      "timestamp": "2024-01-01T01:00:00",
+      "hour_of_year": 2,
+      "day_of_year": 1,
+      "hour_of_day": 1,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000004949991,
+      "emissions": 8007.187691300001,
+      "runtime": 0.41734910011291504,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8007.187691300001,
+      "timestamp": "2024-01-01T02:00:00",
+      "hour_of_year": 3,
+      "day_of_year": 1,
+      "hour_of_day": 2,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999994773566,
+      "emissions": 6974.532064,
+      "runtime": 0.4099001884460449,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6974.532064,
+      "timestamp": "2024-01-01T03:00:00",
+      "hour_of_year": 4,
+      "day_of_year": 1,
+      "hour_of_day": 3,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999988165647,
+      "emissions": 6648.726137000001,
+      "runtime": 0.45896434783935547,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6648.726137000001,
+      "timestamp": "2024-01-01T04:00:00",
+      "hour_of_year": 5,
+      "day_of_year": 1,
+      "hour_of_day": 4,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999969241872,
+      "emissions": 4898.524572,
+      "runtime": 0.46267175674438477,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 4898.524572,
+      "timestamp": "2024-01-01T05:00:00",
+      "hour_of_year": 6,
+      "day_of_year": 1,
+      "hour_of_day": 5,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999978975878,
+      "emissions": 4581.1454706,
+      "runtime": 0.4513416290283203,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 4581.1454706,
+      "timestamp": "2024-01-01T06:00:00",
+      "hour_of_year": 7,
+      "day_of_year": 1,
+      "hour_of_day": 6,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000004949991,
+      "emissions": 3726.8978313000007,
+      "runtime": 0.40972375869750977,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 3726.8978313000007,
+      "timestamp": "2024-01-01T07:00:00",
+      "hour_of_year": 8,
+      "day_of_year": 1,
+      "hour_of_day": 7,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000025342809,
+      "emissions": 3850.636137,
+      "runtime": 0.43990302085876465,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 3850.636137,
+      "timestamp": "2024-01-01T08:00:00",
+      "hour_of_year": 9,
+      "day_of_year": 1,
+      "hour_of_day": 8,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999883621479,
+      "emissions": 4070.8845720000004,
+      "runtime": 0.41298604011535645,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 4070.8845720000004,
+      "timestamp": "2024-01-01T09:00:00",
+      "hour_of_year": 10,
+      "day_of_year": 1,
+      "hour_of_day": 9,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000031327963,
+      "emissions": 4829.0697186,
+      "runtime": 0.4371809959411621,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 4829.0697186,
+      "timestamp": "2024-01-01T10:00:00",
+      "hour_of_year": 11,
+      "day_of_year": 1,
+      "hour_of_day": 10,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999999968005,
+      "emissions": 4880.806102,
+      "runtime": 0.4458491802215576,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 4880.806102,
+      "timestamp": "2024-01-01T11:00:00",
+      "hour_of_year": 12,
+      "day_of_year": 1,
+      "hour_of_day": 11,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999809279069,
+      "emissions": 5342.044572,
+      "runtime": 0.4432661533355713,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5342.044572,
+      "timestamp": "2024-01-01T12:00:00",
+      "hour_of_year": 13,
+      "day_of_year": 1,
+      "hour_of_day": 12,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000019010332,
+      "emissions": 5098.5193133,
+      "runtime": 0.42673325538635254,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5098.5193133,
+      "timestamp": "2024-01-01T13:00:00",
+      "hour_of_year": 14,
+      "day_of_year": 1,
+      "hour_of_day": 13,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999971415555,
+      "emissions": 5271.912537,
+      "runtime": 0.4484879970550537,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5271.912537,
+      "timestamp": "2024-01-01T14:00:00",
+      "hour_of_year": 15,
+      "day_of_year": 1,
+      "hour_of_day": 14,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999989380402,
+      "emissions": 5477.476572000001,
+      "runtime": 0.4096643924713135,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5477.476572000001,
+      "timestamp": "2024-01-01T15:00:00",
+      "hour_of_year": 16,
+      "day_of_year": 1,
+      "hour_of_day": 15,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.60000000208568,
+      "emissions": 5664.526447300001,
+      "runtime": 0.424802303314209,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5664.526447300001,
+      "timestamp": "2024-01-01T16:00:00",
+      "hour_of_year": 17,
+      "day_of_year": 1,
+      "hour_of_day": 16,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999996917546,
+      "emissions": 5268.395635299999,
+      "runtime": 0.3983311653137207,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5268.395635299999,
+      "timestamp": "2024-01-01T17:00:00",
+      "hour_of_year": 18,
+      "day_of_year": 1,
+      "hour_of_day": 17,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999990235932,
+      "emissions": 5119.359137,
+      "runtime": 0.42777085304260254,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5119.359137,
+      "timestamp": "2024-01-01T18:00:00",
+      "hour_of_year": 19,
+      "day_of_year": 1,
+      "hour_of_day": 18,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000027948712,
+      "emissions": 5708.6481413,
+      "runtime": 0.4221796989440918,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5708.6481413,
+      "timestamp": "2024-01-01T19:00:00",
+      "hour_of_year": 20,
+      "day_of_year": 1,
+      "hour_of_day": 19,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000001985553,
+      "emissions": 6207.700572,
+      "runtime": 0.4167306423187256,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6207.700572,
+      "timestamp": "2024-01-01T20:00:00",
+      "hour_of_year": 21,
+      "day_of_year": 1,
+      "hour_of_day": 20,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.60000000097323,
+      "emissions": 6319.398253300001,
+      "runtime": 0.44295835494995117,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6319.398253300001,
+      "timestamp": "2024-01-01T21:00:00",
+      "hour_of_year": 22,
+      "day_of_year": 1,
+      "hour_of_day": 21,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999989075546,
+      "emissions": 7371.148572,
+      "runtime": 0.44579386711120605,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7371.148572,
+      "timestamp": "2024-01-01T22:00:00",
+      "hour_of_year": 23,
+      "day_of_year": 1,
+      "hour_of_day": 22,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999997953472,
+      "emissions": 6996.190901999999,
+      "runtime": 0.459733247756958,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6996.190901999999,
+      "timestamp": "2024-01-01T23:00:00",
+      "hour_of_year": 24,
+      "day_of_year": 1,
+      "hour_of_day": 23,
+      "day_of_week": "Monday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999990235932,
+      "emissions": 7398.460937000001,
+      "runtime": 0.42885708808898926,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7398.460937000001,
+      "timestamp": "2024-01-02T00:00:00",
+      "hour_of_year": 25,
+      "day_of_year": 2,
+      "hour_of_day": 0,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999988165647,
+      "emissions": 7561.746737,
+      "runtime": 0.4049394130706787,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7561.746737,
+      "timestamp": "2024-01-02T01:00:00",
+      "hour_of_year": 26,
+      "day_of_year": 2,
+      "hour_of_day": 1,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000010665851,
+      "emissions": 7987.275791300001,
+      "runtime": 0.44116830825805664,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7987.275791300001,
+      "timestamp": "2024-01-02T02:00:00",
+      "hour_of_year": 27,
+      "day_of_year": 2,
+      "hour_of_day": 2,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000029651682,
+      "emissions": 6945.0018226,
+      "runtime": 0.42547178268432617,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6945.0018226,
+      "timestamp": "2024-01-02T03:00:00",
+      "hour_of_year": 28,
+      "day_of_year": 2,
+      "hour_of_day": 3,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.60000000208568,
+      "emissions": 5588.1191933,
+      "runtime": 0.3983421325683594,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5588.1191933,
+      "timestamp": "2024-01-02T04:00:00",
+      "hour_of_year": 29,
+      "day_of_year": 2,
+      "hour_of_day": 4,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000008791233,
+      "emissions": 5150.0922353000005,
+      "runtime": 0.4265904426574707,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5150.0922353000005,
+      "timestamp": "2024-01-02T05:00:00",
+      "hour_of_year": 30,
+      "day_of_year": 2,
+      "hour_of_day": 5,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000014326697,
+      "emissions": 5582.9777306,
+      "runtime": 0.42510986328125,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5582.9777306,
+      "timestamp": "2024-01-02T06:00:00",
+      "hour_of_year": 31,
+      "day_of_year": 2,
+      "hour_of_day": 6,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000028803573,
+      "emissions": 5951.7455586,
+      "runtime": 0.4137563705444336,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5951.7455586,
+      "timestamp": "2024-01-02T07:00:00",
+      "hour_of_year": 32,
+      "day_of_year": 2,
+      "hour_of_day": 7,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999999327919,
+      "emissions": 6504.8045373,
+      "runtime": 0.431490421295166,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6504.8045373,
+      "timestamp": "2024-01-02T08:00:00",
+      "hour_of_year": 33,
+      "day_of_year": 2,
+      "hour_of_day": 8,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000028803573,
+      "emissions": 7178.8926226,
+      "runtime": 0.4371483325958252,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7178.8926226,
+      "timestamp": "2024-01-02T09:00:00",
+      "hour_of_year": 34,
+      "day_of_year": 2,
+      "hour_of_day": 9,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000029651682,
+      "emissions": 8455.9363906,
+      "runtime": 0.4439985752105713,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8455.9363906,
+      "timestamp": "2024-01-02T10:00:00",
+      "hour_of_year": 35,
+      "day_of_year": 2,
+      "hour_of_day": 10,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000022673153,
+      "emissions": 8877.232337000001,
+      "runtime": 0.4294145107269287,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8877.232337000001,
+      "timestamp": "2024-01-02T11:00:00",
+      "hour_of_year": 36,
+      "day_of_year": 2,
+      "hour_of_day": 11,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999981059432,
+      "emissions": 9698.676174600003,
+      "runtime": 0.44316697120666504,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9698.676174600003,
+      "timestamp": "2024-01-02T12:00:00",
+      "hour_of_year": 37,
+      "day_of_year": 2,
+      "hour_of_day": 12,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999983921883,
+      "emissions": 9180.7437673,
+      "runtime": 0.41187500953674316,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9180.7437673,
+      "timestamp": "2024-01-02T13:00:00",
+      "hour_of_year": 38,
+      "day_of_year": 2,
+      "hour_of_day": 13,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000030493118,
+      "emissions": 10181.270858600003,
+      "runtime": 0.4441361427307129,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10181.270858600003,
+      "timestamp": "2024-01-02T14:00:00",
+      "hour_of_year": 39,
+      "day_of_year": 2,
+      "hour_of_day": 14,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999974707954,
+      "emissions": 10153.621337,
+      "runtime": 0.41626596450805664,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10153.621337,
+      "timestamp": "2024-01-02T15:00:00",
+      "hour_of_year": 40,
+      "day_of_year": 2,
+      "hour_of_day": 15,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000006886197,
+      "emissions": 10383.601337,
+      "runtime": 0.42839527130126953,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10383.601337,
+      "timestamp": "2024-01-02T16:00:00",
+      "hour_of_year": 41,
+      "day_of_year": 2,
+      "hour_of_day": 16,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999971415555,
+      "emissions": 10540.754336999998,
+      "runtime": 0.42939281463623047,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10540.754336999998,
+      "timestamp": "2024-01-02T17:00:00",
+      "hour_of_year": 42,
+      "day_of_year": 2,
+      "hour_of_day": 17,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999974707954,
+      "emissions": 10274.744137000002,
+      "runtime": 0.43473172187805176,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10274.744137000002,
+      "timestamp": "2024-01-02T18:00:00",
+      "hour_of_year": 43,
+      "day_of_year": 2,
+      "hour_of_day": 18,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999788491047,
+      "emissions": 11149.4393553,
+      "runtime": 0.4207589626312256,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 11149.4393553,
+      "timestamp": "2024-01-02T19:00:00",
+      "hour_of_year": 44,
+      "day_of_year": 2,
+      "hour_of_day": 19,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999972521946,
+      "emissions": 10573.718137000002,
+      "runtime": 0.4284224510192871,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10573.718137000002,
+      "timestamp": "2024-01-02T20:00:00",
+      "hour_of_year": 45,
+      "day_of_year": 2,
+      "hour_of_day": 20,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999999327919,
+      "emissions": 10541.6758133,
+      "runtime": 0.4397861957550049,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10541.6758133,
+      "timestamp": "2024-01-02T21:00:00",
+      "hour_of_year": 46,
+      "day_of_year": 2,
+      "hour_of_day": 21,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999999327919,
+      "emissions": 10136.5864533,
+      "runtime": 0.4148266315460205,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10136.5864533,
+      "timestamp": "2024-01-02T22:00:00",
+      "hour_of_year": 47,
+      "day_of_year": 2,
+      "hour_of_day": 22,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999977921648,
+      "emissions": 9917.682395300002,
+      "runtime": 0.4145975112915039,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9917.682395300002,
+      "timestamp": "2024-01-02T23:00:00",
+      "hour_of_year": 48,
+      "day_of_year": 2,
+      "hour_of_day": 23,
+      "day_of_week": "Tuesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999994277427,
+      "emissions": 10145.9346693,
+      "runtime": 0.4301331043243408,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10145.9346693,
+      "timestamp": "2024-01-03T00:00:00",
+      "hour_of_year": 49,
+      "day_of_year": 3,
+      "hour_of_day": 0,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.60000000097323,
+      "emissions": 8855.101843299999,
+      "runtime": 0.417421817779541,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8855.101843299999,
+      "timestamp": "2024-01-03T01:00:00",
+      "hour_of_year": 50,
+      "day_of_year": 3,
+      "hour_of_day": 1,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999974707954,
+      "emissions": 8848.101537,
+      "runtime": 0.42376232147216797,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8848.101537,
+      "timestamp": "2024-01-03T02:00:00",
+      "hour_of_year": 51,
+      "day_of_year": 3,
+      "hour_of_day": 2,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000001985555,
+      "emissions": 7291.3333213000005,
+      "runtime": 0.4059720039367676,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7291.3333213000005,
+      "timestamp": "2024-01-03T03:00:00",
+      "hour_of_year": 52,
+      "day_of_year": 3,
+      "hour_of_day": 3,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999999327919,
+      "emissions": 6175.2799233,
+      "runtime": 0.4293501377105713,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6175.2799233,
+      "timestamp": "2024-01-03T04:00:00",
+      "hour_of_year": 53,
+      "day_of_year": 3,
+      "hour_of_day": 4,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999841866244,
+      "emissions": 5367.388571999999,
+      "runtime": 0.3999819755554199,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5367.388571999999,
+      "timestamp": "2024-01-03T05:00:00",
+      "hour_of_year": 54,
+      "day_of_year": 3,
+      "hour_of_day": 5,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999986061246,
+      "emissions": 5131.1593053,
+      "runtime": 0.41146278381347656,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5131.1593053,
+      "timestamp": "2024-01-03T06:00:00",
+      "hour_of_year": 55,
+      "day_of_year": 3,
+      "hour_of_day": 6,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999977921648,
+      "emissions": 5561.4137393,
+      "runtime": 0.4333992004394531,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5561.4137393,
+      "timestamp": "2024-01-03T07:00:00",
+      "hour_of_year": 56,
+      "day_of_year": 3,
+      "hour_of_day": 7,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000010665851,
+      "emissions": 5732.0186813,
+      "runtime": 0.4504272937774658,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 5732.0186813,
+      "timestamp": "2024-01-03T08:00:00",
+      "hour_of_year": 57,
+      "day_of_year": 3,
+      "hour_of_day": 8,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999987117763,
+      "emissions": 6139.289967300001,
+      "runtime": 0.4081435203552246,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6139.289967300001,
+      "timestamp": "2024-01-03T09:00:00",
+      "hour_of_year": 58,
+      "day_of_year": 3,
+      "hour_of_day": 9,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999946653869,
+      "emissions": 6961.684572000001,
+      "runtime": 0.43085289001464844,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 6961.684572000001,
+      "timestamp": "2024-01-03T10:00:00",
+      "hour_of_year": 59,
+      "day_of_year": 3,
+      "hour_of_day": 10,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999976858987,
+      "emissions": 7276.811375299999,
+      "runtime": 0.4282650947570801,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 7276.811375299999,
+      "timestamp": "2024-01-03T11:00:00",
+      "hour_of_year": 60,
+      "day_of_year": 3,
+      "hour_of_day": 11,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999992272927,
+      "emissions": 8407.945511300002,
+      "runtime": 0.45497918128967285,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8407.945511300002,
+      "timestamp": "2024-01-03T12:00:00",
+      "hour_of_year": 61,
+      "day_of_year": 3,
+      "hour_of_day": 12,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000022673153,
+      "emissions": 8773.741337000001,
+      "runtime": 0.43119215965270996,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 8773.741337000001,
+      "timestamp": "2024-01-03T13:00:00",
+      "hour_of_year": 62,
+      "day_of_year": 3,
+      "hour_of_day": 13,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.6000000008791233,
+      "emissions": 9458.840793300002,
+      "runtime": 0.447981595993042,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9458.840793300002,
+      "timestamp": "2024-01-03T14:00:00",
+      "hour_of_year": 63,
+      "day_of_year": 3,
+      "hour_of_day": 14,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999968175418,
+      "emissions": 10067.908572000002,
+      "runtime": 0.42307281494140625,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10067.908572000002,
+      "timestamp": "2024-01-03T15:00:00",
+      "hour_of_year": 64,
+      "day_of_year": 3,
+      "hour_of_day": 15,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999996250206,
+      "emissions": 9597.3234946,
+      "runtime": 0.4296250343322754,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9597.3234946,
+      "timestamp": "2024-01-03T16:00:00",
+      "hour_of_year": 65,
+      "day_of_year": 3,
+      "hour_of_day": 16,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999982838816,
+      "emissions": 9188.660502000002,
+      "runtime": 0.4439709186553955,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9188.660502000002,
+      "timestamp": "2024-01-03T17:00:00",
+      "hour_of_year": 66,
+      "day_of_year": 3,
+      "hour_of_day": 17,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999988936877,
+      "emissions": 9778.828572000002,
+      "runtime": 0.4345571994781494,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 9778.828572000002,
+      "timestamp": "2024-01-03T18:00:00",
+      "hour_of_year": 67,
+      "day_of_year": 3,
+      "hour_of_day": 18,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999987117763,
+      "emissions": 10299.964572000004,
+      "runtime": 0.43511009216308594,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10299.964572000004,
+      "timestamp": "2024-01-03T19:00:00",
+      "hour_of_year": 68,
+      "day_of_year": 3,
+      "hour_of_day": 19,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999999151517,
+      "emissions": 10303.673710600002,
+      "runtime": 0.4318091869354248,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10303.673710600002,
+      "timestamp": "2024-01-03T20:00:00",
+      "hour_of_year": 69,
+      "day_of_year": 3,
+      "hour_of_day": 20,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.599999989380402,
+      "emissions": 11321.644572000001,
+      "runtime": 0.42260050773620605,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 11321.644572000001,
+      "timestamp": "2024-01-03T21:00:00",
+      "hour_of_year": 70,
+      "day_of_year": 3,
+      "hour_of_day": 21,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999799950564,
+      "emissions": 11495.092572,
+      "runtime": 0.4602494239807129,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 11495.092572,
+      "timestamp": "2024-01-03T22:00:00",
+      "hour_of_year": 71,
+      "day_of_year": 3,
+      "hour_of_day": 22,
+      "day_of_week": "Wednesday",
+      "month": 1
+    },
+    {
+      "qor_target": 0.6,
+      "qor_achieved": 0.5999999996877698,
+      "emissions": 10399.040102000003,
+      "runtime": 0.45072412490844727,
+      "work": 0.0,
+      "mip_gap": 0.0,
+      "lp_status": "Optimal",
+      "objective": 10399.040102000003,
+      "timestamp": "2024-01-03T23:00:00",
+      "hour_of_year": 72,
+      "day_of_year": 3,
+      "hour_of_day": 23,
+      "day_of_week": "Wednesday",
+      "month": 1
+    }
+  ],
+  "deployments": [
+    {
+      "timestamp": "2024-01-01T00:00:00",
+      "hour_of_year": 1,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T01:00:00",
+      "hour_of_year": 2,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-01T02:00:00",
+      "hour_of_year": 3,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T03:00:00",
+      "hour_of_year": 4,
+      "total_machines": 8,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 1
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T04:00:00",
+      "hour_of_year": 5,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T05:00:00",
+      "hour_of_year": 6,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-01T06:00:00",
+      "hour_of_year": 7,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 3
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T07:00:00",
+      "hour_of_year": 8,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T08:00:00",
+      "hour_of_year": 9,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T09:00:00",
+      "hour_of_year": 10,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-01T10:00:00",
+      "hour_of_year": 11,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T11:00:00",
+      "hour_of_year": 12,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 1
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-01T12:00:00",
+      "hour_of_year": 13,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-01T13:00:00",
+      "hour_of_year": 14,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T14:00:00",
+      "hour_of_year": 15,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T15:00:00",
+      "hour_of_year": 16,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-01T16:00:00",
+      "hour_of_year": 17,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T17:00:00",
+      "hour_of_year": 18,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T18:00:00",
+      "hour_of_year": 19,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-01T19:00:00",
+      "hour_of_year": 20,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-01T20:00:00",
+      "hour_of_year": 21,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-01T21:00:00",
+      "hour_of_year": 22,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-01T22:00:00",
+      "hour_of_year": 23,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-01T23:00:00",
+      "hour_of_year": 24,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 1
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-02T00:00:00",
+      "hour_of_year": 25,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T01:00:00",
+      "hour_of_year": 26,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T02:00:00",
+      "hour_of_year": 27,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-02T03:00:00",
+      "hour_of_year": 28,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T04:00:00",
+      "hour_of_year": 29,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T05:00:00",
+      "hour_of_year": 30,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-02T06:00:00",
+      "hour_of_year": 31,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T07:00:00",
+      "hour_of_year": 32,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 3
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T08:00:00",
+      "hour_of_year": 33,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-02T09:00:00",
+      "hour_of_year": 34,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 3
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T10:00:00",
+      "hour_of_year": 35,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T11:00:00",
+      "hour_of_year": 36,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T12:00:00",
+      "hour_of_year": 37,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T13:00:00",
+      "hour_of_year": 38,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T14:00:00",
+      "hour_of_year": 39,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T15:00:00",
+      "hour_of_year": 40,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T16:00:00",
+      "hour_of_year": 41,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T17:00:00",
+      "hour_of_year": 42,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T18:00:00",
+      "hour_of_year": 43,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T19:00:00",
+      "hour_of_year": 44,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-02T20:00:00",
+      "hour_of_year": 45,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-02T21:00:00",
+      "hour_of_year": 46,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-02T22:00:00",
+      "hour_of_year": 47,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-02T23:00:00",
+      "hour_of_year": 48,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T00:00:00",
+      "hour_of_year": 49,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T01:00:00",
+      "hour_of_year": 50,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T02:00:00",
+      "hour_of_year": 51,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T03:00:00",
+      "hour_of_year": 52,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T04:00:00",
+      "hour_of_year": 53,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T05:00:00",
+      "hour_of_year": 54,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T06:00:00",
+      "hour_of_year": 55,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T07:00:00",
+      "hour_of_year": 56,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T08:00:00",
+      "hour_of_year": 57,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T09:00:00",
+      "hour_of_year": 58,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T10:00:00",
+      "hour_of_year": 59,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T11:00:00",
+      "hour_of_year": 60,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T12:00:00",
+      "hour_of_year": 61,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T13:00:00",
+      "hour_of_year": 62,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 1,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T14:00:00",
+      "hour_of_year": 63,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 1,
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T15:00:00",
+      "hour_of_year": 64,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T16:00:00",
+      "hour_of_year": 65,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 3,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T17:00:00",
+      "hour_of_year": 66,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 1
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    },
+    {
+      "timestamp": "2024-01-03T18:00:00",
+      "hour_of_year": 67,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T19:00:00",
+      "hour_of_year": 68,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T20:00:00",
+      "hour_of_year": 69,
+      "total_machines": 10,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 3,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p4d.24xlarge": 2,
+        "AWS_p6-b200.48xlarge": 8
+      }
+    },
+    {
+      "timestamp": "2024-01-03T21:00:00",
+      "hour_of_year": 70,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T22:00:00",
+      "hour_of_year": 71,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 1,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 2
+      },
+      "machines_per_type": {
+        "AWS_p6-b200.48xlarge": 9
+      }
+    },
+    {
+      "timestamp": "2024-01-03T23:00:00",
+      "hour_of_year": 72,
+      "total_machines": 9,
+      "machines_per_tier": {
+        "tier_0": 2,
+        "tier_1": 2,
+        "tier_2": 2,
+        "tier_3": 2,
+        "tier_4": 1
+      },
+      "machines_per_type": {
+        "AWS_p5.48xlarge": 2,
+        "AWS_p6-b200.48xlarge": 7
+      }
+    }
+  ],
+  "last_hour": 72
+}

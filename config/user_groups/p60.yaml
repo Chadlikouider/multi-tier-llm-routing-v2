@@ -3,17 +3,17 @@ groups:
   - name: best-effort
     weight: 0.4
     slo_lower:
-      tier_0: 1
-      tier_1: 0.75
-      tier_2: 0.5
-      tier_3: 0.25
+      tier_0: 0
+      tier_1: 0
+      tier_2: 0
+      tier_3: 0
       tier_4: 0
     slo_upper:
-      tier_0: 0
-      tier_1: 0.25
-      tier_2: 0.5
-      tier_3: 0.75
-      tier_4: 1
+      tier_0: 0.3
+      tier_1: 0.4
+      tier_2: 0.3
+      tier_3: 0
+      tier_4: 0
   - name: premium
     weight: 0.6
     slo_lower:
@@ -21,10 +21,10 @@ groups:
       tier_1: 0
       tier_2: 0
       tier_3: 0
-      tier_4: 1
+      tier_4: 0
     slo_upper:
       tier_0: 0
       tier_1: 0
-      tier_2: 0
-      tier_3: 0
-      tier_4: 1
+      tier_2: 0.2
+      tier_3: 0.4
+      tier_4: 0.4
