@@ -41,6 +41,10 @@ def optimize_single_hour(args):
             future_vps=True
         )
         
+        # Calculate total energy consumption (kWh)
+        # Energy = sum over all machines of (power * deployment)
+        total_energy_kwh = metrics['energy']
+        
         # Add metadata
         metrics['timestamp'] = timestamp.isoformat()
         metrics['hour_of_year'] = hour_idx + 1
@@ -48,12 +52,16 @@ def optimize_single_hour(args):
         metrics['hour_of_day'] = timestamp.hour
         metrics['day_of_week'] = timestamp.strftime('%A')
         metrics['month'] = timestamp.month
+        metrics['qor_target'] = qor_target
+        metrics['energy_kwh'] = float(total_energy_kwh)  # Add energy consumption
         
         # Deployment summary
         deployment_summary = {
             'timestamp': timestamp.isoformat(),
             'hour_of_year': hour_idx + 1,
+            'qor_target': qor_target,
             'total_machines': int(np.sum(solver.d_[hour_idx, :, :])),
+            'energy_kwh': float(total_energy_kwh),
             'machines_per_tier': {
                 f'tier_{q}': int(np.sum(solver.d_[hour_idx, q_idx, :]))
                 for q_idx, q in enumerate(scenario.Q)
@@ -63,6 +71,7 @@ def optimize_single_hour(args):
         return {
             'success': True,
             'hour_idx': hour_idx,
+            'qor_target': qor_target,
             'metrics': metrics,
             'deployment': deployment_summary
         }
@@ -71,6 +80,7 @@ def optimize_single_hour(args):
         return {
             'success': False,
             'hour_idx': hour_idx,
+            'qor_target': qor_target,
             'error': str(e),
             'timestamp': timestamp.isoformat()
         }
@@ -78,34 +88,38 @@ def optimize_single_hour(args):
 
 def run_yearly_optimization_parallel(
     output_dir: str = "results/yearly_optimization",
-    qor_target: float = 0.6,
+    qor_targets: List[float] = None,
     n_workers: int = None,
     batch_size: int = 168,  # 1 week at a time
 ):
     """
-    Run optimization in parallel for each hour of 2024.
+    Run optimization in parallel for each hour of 2024 across multiple QoR targets.
     
     Args:
         output_dir: Directory to save results
-        qor_target: Target QoR for minimize_emissions mode
+        qor_targets: List of target QoR values (default: [0.0, 0.1, ..., 1.0])
         n_workers: Number of parallel workers (None = use all CPUs)
         batch_size: How many hours to process before saving checkpoint
     """
+    # Default QoR targets from 0 to 1 in steps of 0.1
+    if qor_targets is None:
+        qor_targets = np.arange(0.0, 1.1, 0.1).tolist()
+    
     # Initialize scenario
     print("Initializing scenario...")
     with initialize(version_base=None, config_path="../config"):
         cfg = compose(config_name="config")
     scenario = Scenario.from_config(cfg)
     
-    R_hat = scenario.R * 1000
+    R_hat = scenario.R * 1_000_000
     C_hat = scenario.C * 1_000_000
-    
+
     # Pickle scenario for worker processes
     scenario_pickle = pickle.dumps(scenario)
     
-    # Create output directory
-    output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
+    # Create base output directory
+    base_output_path = Path(output_dir)
+    base_output_path.mkdir(parents=True, exist_ok=True)
     
     total_hours = len(scenario.I)
     
@@ -113,104 +127,137 @@ def run_yearly_optimization_parallel(
         n_workers = max(1, cpu_count() - 1)  # Leave 1 CPU free
     
     print(f"Total hours in 2024: {total_hours}")
-    print(f"QoR Target: {qor_target}")
+    print(f"QoR Targets: {qor_targets}")
+    print(f"Total optimizations: {total_hours * len(qor_targets)}")
     print(f"Parallel workers: {n_workers}")
     print(f"Batch size: {batch_size}")
-    print(f"Output directory: {output_path}")
+    print(f"Output directory: {base_output_path}")
     print("=" * 80)
     
-    all_results = []
-    deployments = []
-    start_time = datetime.now()
+    overall_start_time = datetime.now()
     
-    # Process in batches
-    for batch_start in range(0, total_hours, batch_size):
-        batch_end = min(batch_start + batch_size, total_hours)
-        batch_indices = range(batch_start, batch_end)
+    # Process each QoR target
+    for qor_idx, qor_target in enumerate(qor_targets):
+        print(f"\n{'=' * 80}")
+        print(f"PROCESSING QoR TARGET {qor_idx + 1}/{len(qor_targets)}: {qor_target:.2f}")
+        print(f"{'=' * 80}")
         
-        print(f"\nProcessing hours {batch_start}-{batch_end-1} ({len(batch_indices)} hours)")
+        # Create output directory for this QoR target
+        output_path = base_output_path / f"qor_{qor_target:.2f}"
+        output_path.mkdir(parents=True, exist_ok=True)
         
-        # Prepare arguments for parallel processing
-        args_list = [
-            (hour_idx, scenario_pickle, R_hat, C_hat, qor_target)
-            for hour_idx in batch_indices
-        ]
+        all_results = []
+        deployments = []
+        start_time = datetime.now()
         
-        # Run optimization in parallel
-        batch_results = []
-        batch_deployments = []
-        
-        with ProcessPoolExecutor(max_workers=n_workers) as executor:
-            # Submit all tasks
-            futures = {executor.submit(optimize_single_hour, args): args[0] 
-                      for args in args_list}
+        # Process in batches
+        for batch_start in range(0, total_hours, batch_size):
+            batch_end = min(batch_start + batch_size, total_hours)
+            batch_indices = range(batch_start, batch_end)
             
-            # Collect results as they complete
-            completed = 0
-            for future in as_completed(futures):
-                result = future.result()
-                completed += 1
+            print(f"\nProcessing hours {batch_start}-{batch_end-1} ({len(batch_indices)} hours)")
+            
+            # Prepare arguments for parallel processing
+            args_list = [
+                (hour_idx, scenario_pickle, R_hat, C_hat, qor_target)
+                for hour_idx in batch_indices
+            ]
+            
+            # Run optimization in parallel
+            batch_results = []
+            batch_deployments = []
+            
+            with ProcessPoolExecutor(max_workers=n_workers) as executor:
+                # Submit all tasks
+                futures = {executor.submit(optimize_single_hour, args): args[0] 
+                          for args in args_list}
                 
-                if result['success']:
-                    batch_results.append(result['metrics'])
-                    batch_deployments.append(result['deployment'])
-                    print(f"  ✓ Hour {result['hour_idx']:4d} | "
-                          f"Emissions: {result['metrics']['emissions']:10,.0f} gCO₂e | "
-                          f"QoR: {result['metrics']['qor_achieved']:.4f} | "
-                          f"Time: {result['metrics']['runtime']:.2f}s | "
-                          f"[{completed}/{len(batch_indices)}]")
-                else:
-                    # Log error
-                    error_metrics = {
-                        'timestamp': result['timestamp'],
-                        'hour_of_year': result['hour_idx'] + 1,
-                        'error': result['error'],
-                        'emissions': None,
-                        'qor_achieved': None
-                    }
-                    batch_results.append(error_metrics)
-                    batch_deployments.append({
-                        'timestamp': result['timestamp'],
-                        'hour_of_year': result['hour_idx'] + 1,
-                        'total_machines': 0,
-                        'error': result['error']
-                    })
-                    print(f"  ✗ Hour {result['hour_idx']:4d} | ERROR: {result['error']}")
+                # Collect results as they complete
+                completed = 0
+                for future in as_completed(futures):
+                    result = future.result()
+                    completed += 1
+                    
+                    if result['success']:
+                        batch_results.append(result['metrics'])
+                        batch_deployments.append(result['deployment'])
+                        print(f"  ✓ Hour {result['hour_idx']:4d} | "
+                              f"Emissions: {result['metrics']['emissions']:10,.0f} gCO₂e | "
+                              f"Energy: {result['metrics']['energy_kwh']:8,.1f} kWh | "
+                              f"QoR: {result['metrics']['qor_achieved']:.4f} | "
+                              f"Time: {result['metrics']['runtime']:.2f}s | "
+                              f"[{completed}/{len(batch_indices)}]")
+                    else:
+                        # Log error
+                        error_metrics = {
+                            'timestamp': result['timestamp'],
+                            'hour_of_year': result['hour_idx'] + 1,
+                            'qor_target': qor_target,
+                            'error': result['error'],
+                            'emissions': None,
+                            'energy_kwh': None,
+                            'qor_achieved': None
+                        }
+                        batch_results.append(error_metrics)
+                        batch_deployments.append({
+                            'timestamp': result['timestamp'],
+                            'hour_of_year': result['hour_idx'] + 1,
+                            'qor_target': qor_target,
+                            'total_machines': 0,
+                            'energy_kwh': 0,
+                            'error': result['error']
+                        })
+                        print(f"  ✗ Hour {result['hour_idx']:4d} | ERROR: {result['error']}")
+            
+            # Sort batch results by hour
+            batch_results.sort(key=lambda x: x.get('hour_of_year', 0))
+            batch_deployments.sort(key=lambda x: x.get('hour_of_year', 0))
+            
+            all_results.extend(batch_results)
+            deployments.extend(batch_deployments)
+            
+            # Save checkpoint after each batch
+            save_checkpoint(output_path, all_results, deployments, batch_end)
+            
+            # Print progress
+            elapsed = (datetime.now() - start_time).total_seconds()
+            hours_completed = len(all_results)
+            avg_time_per_hour = elapsed / hours_completed
+            remaining_hours = total_hours - hours_completed
+            eta_seconds = avg_time_per_hour * remaining_hours
+            eta = timedelta(seconds=int(eta_seconds))
+            
+            print(f"\n  Batch complete!")
+            print(f"  Progress: {hours_completed}/{total_hours} ({100*hours_completed/total_hours:.1f}%)")
+            print(f"  Elapsed: {timedelta(seconds=int(elapsed))}")
+            print(f"  Avg time/hour: {avg_time_per_hour:.2f}s")
+            print(f"  ETA: {eta}")
         
-        # Sort batch results by hour
-        batch_results.sort(key=lambda x: x.get('hour_of_year', 0))
-        batch_deployments.sort(key=lambda x: x.get('hour_of_year', 0))
+        # Save final results for this QoR target
+        print(f"\n{'=' * 80}")
+        print(f"QoR Target {qor_target:.2f} complete! Saving results...")
+        save_final_results(output_path, all_results, deployments, scenario, qor_target)
         
-        all_results.extend(batch_results)
-        deployments.extend(batch_deployments)
+        # Print summary statistics
+        print_summary_statistics(all_results, qor_target)
         
-        # Save checkpoint after each batch
-        save_checkpoint(output_path, all_results, deployments, batch_end)
+        # Generate visualizations
+        create_visualizations(output_path, all_results, deployments, qor_target)
         
-        # Print progress
-        elapsed = (datetime.now() - start_time).total_seconds()
-        hours_completed = len(all_results)
-        avg_time_per_hour = elapsed / hours_completed
-        remaining_hours = total_hours - hours_completed
-        eta_seconds = avg_time_per_hour * remaining_hours
-        eta = timedelta(seconds=int(eta_seconds))
-        
-        print(f"\n  Batch complete!")
-        print(f"  Progress: {hours_completed}/{total_hours} ({100*hours_completed/total_hours:.1f}%)")
-        print(f"  Elapsed: {timedelta(seconds=int(elapsed))}")
-        print(f"  Avg time/hour: {avg_time_per_hour:.2f}s")
-        print(f"  ETA: {eta}")
+        qor_elapsed = (datetime.now() - start_time).total_seconds()
+        print(f"\nQoR {qor_target:.2f} total time: {timedelta(seconds=int(qor_elapsed))}")
     
-    # Save final results
-    print("\n" + "=" * 80)
-    print("Optimization complete! Saving final results...")
-    save_final_results(output_path, all_results, deployments, scenario)
+    # Create comparison visualizations across all QoR targets
+    print(f"\n{'=' * 80}")
+    print("Creating comparison visualizations across all QoR targets...")
+    create_comparison_visualizations(base_output_path, qor_targets)
     
-    # Print summary statistics
-    print_summary_statistics(all_results)
-    
-    # Generate visualizations
-    create_visualizations(output_path, all_results, deployments)
+    total_elapsed = (datetime.now() - overall_start_time).total_seconds()
+    print(f"\n{'=' * 80}")
+    print("ALL QoR TARGETS COMPLETE!")
+    print(f"Total runtime: {timedelta(seconds=int(total_elapsed))}")
+    print(f"Results saved to: {base_output_path}")
+    print(f"{'=' * 80}")
 
 
 def save_checkpoint(output_path: Path, results: List[Dict], 
@@ -229,12 +276,14 @@ def save_checkpoint(output_path: Path, results: List[Dict],
 
 
 def save_final_results(output_path: Path, results: List[Dict], 
-                       deployments: List[Dict], scenario: Scenario):
+                       deployments: List[Dict], scenario: Scenario,
+                       qor_target: float):
     """Save final results in multiple formats."""
     
     # 1. Save as JSON
     with open(output_path / "yearly_results.json", 'w') as f:
         json.dump({
+            'qor_target': qor_target,
             'results': results,
             'deployments': deployments,
             'scenario_info': {
@@ -254,30 +303,37 @@ def save_final_results(output_path: Path, results: List[Dict],
     
     # 3. Save aggregated statistics
     stats = compute_statistics(results)
+    stats['qor_target'] = qor_target
     with open(output_path / "statistics.json", 'w') as f:
         json.dump(stats, f, indent=2)
     
     # 4. Save aggregates
-    df_hourly = df_results.groupby('hour_of_day').agg({
-        'emissions': ['mean', 'std', 'min', 'max'],
-        'qor_achieved': ['mean', 'std', 'min', 'max'],
-        'runtime': ['mean', 'max']
-    }).round(2)
-    df_hourly.to_csv(output_path / "hourly_aggregates.csv")
-    
-    df_daily = df_results.groupby('day_of_year').agg({
-        'emissions': ['sum', 'mean'],
-        'qor_achieved': ['mean', 'min'],
-        'runtime': 'sum'
-    }).round(2)
-    df_daily.to_csv(output_path / "daily_aggregates.csv")
-    
-    df_monthly = df_results.groupby('month').agg({
-        'emissions': ['sum', 'mean'],
-        'qor_achieved': ['mean', 'min'],
-        'runtime': 'sum'
-    }).round(2)
-    df_monthly.to_csv(output_path / "monthly_aggregates.csv")
+    if 'emissions' in df_results.columns and df_results['emissions'].notna().any():
+        agg_dict = {
+            'emissions': ['mean', 'std', 'min', 'max'],
+            'energy_kwh': ['mean', 'std', 'min', 'max', 'sum'],
+            'qor_achieved': ['mean', 'std', 'min', 'max'],
+            'runtime': ['mean', 'max']
+        }
+        
+        df_hourly = df_results.groupby('hour_of_day').agg(agg_dict).round(2)
+        df_hourly.to_csv(output_path / "hourly_aggregates.csv")
+        
+        df_daily = df_results.groupby('day_of_year').agg({
+            'emissions': ['sum', 'mean'],
+            'energy_kwh': ['sum', 'mean'],
+            'qor_achieved': ['mean', 'min'],
+            'runtime': 'sum'
+        }).round(2)
+        df_daily.to_csv(output_path / "daily_aggregates.csv")
+        
+        df_monthly = df_results.groupby('month').agg({
+            'emissions': ['sum', 'mean'],
+            'energy_kwh': ['sum', 'mean'],
+            'qor_achieved': ['mean', 'min'],
+            'runtime': 'sum'
+        }).round(2)
+        df_monthly.to_csv(output_path / "monthly_aggregates.csv")
     
     print(f"\nResults saved to: {output_path}")
 
@@ -290,6 +346,7 @@ def compute_statistics(results: List[Dict]) -> Dict:
         return {'error': 'No valid results'}
     
     emissions = [r['emissions'] for r in valid_results]
+    energy_kwh = [r['energy_kwh'] for r in valid_results]
     qor_values = [r['qor_achieved'] for r in valid_results]
     runtimes = [r['runtime'] for r in valid_results]
     
@@ -312,6 +369,23 @@ def compute_statistics(results: List[Dict]) -> Dict:
                 'p90': np.percentile(emissions, 90),
                 'p95': np.percentile(emissions, 95),
                 'p99': np.percentile(emissions, 99)
+            }
+        },
+        'energy': {
+            'total_kwh': sum(energy_kwh),
+            'total_mwh': sum(energy_kwh) / 1000,
+            'total_gwh': sum(energy_kwh) / 1_000_000,
+            'mean_kwh': np.mean(energy_kwh),
+            'median_kwh': np.median(energy_kwh),
+            'std_kwh': np.std(energy_kwh),
+            'min_kwh': min(energy_kwh),
+            'max_kwh': max(energy_kwh),
+            'percentiles': {
+                'p25': np.percentile(energy_kwh, 25),
+                'p75': np.percentile(energy_kwh, 75),
+                'p90': np.percentile(energy_kwh, 90),
+                'p95': np.percentile(energy_kwh, 95),
+                'p99': np.percentile(energy_kwh, 99)
             }
         },
         'qor': {
@@ -338,7 +412,7 @@ def compute_statistics(results: List[Dict]) -> Dict:
     }
 
 
-def print_summary_statistics(results: List[Dict]):
+def print_summary_statistics(results: List[Dict], qor_target: float):
     """Print summary statistics to console."""
     stats = compute_statistics(results)
     
@@ -347,7 +421,7 @@ def print_summary_statistics(results: List[Dict]):
         return
     
     print("\n" + "=" * 80)
-    print("YEARLY OPTIMIZATION SUMMARY (2024)")
+    print(f"SUMMARY FOR QoR TARGET = {qor_target:.2f}")
     print("=" * 80)
     print(f"\nTotal hours processed: {stats['total_hours']}")
     print(f"Successful: {stats['successful_optimizations']}")
@@ -362,6 +436,15 @@ def print_summary_statistics(results: List[Dict]):
     print(f"  Std:    {stats['emissions']['std']:,.0f} gCO₂e")
     print(f"  Range:  [{stats['emissions']['min']:,.0f}, {stats['emissions']['max']:,.0f}] gCO₂e")
     
+    print(f"\nENERGY:")
+    print(f"  Total:  {stats['energy']['total_kwh']:,.0f} kWh")
+    print(f"         ({stats['energy']['total_mwh']:,.2f} MWh)")
+    print(f"         ({stats['energy']['total_gwh']:,.4f} GWh)")
+    print(f"  Mean:   {stats['energy']['mean_kwh']:,.0f} kWh/hour")
+    print(f"  Median: {stats['energy']['median_kwh']:,.0f} kWh/hour")
+    print(f"  Std:    {stats['energy']['std_kwh']:,.0f} kWh")
+    print(f"  Range:  [{stats['energy']['min_kwh']:,.0f}, {stats['energy']['max_kwh']:,.0f}] kWh")
+    
     print(f"\nQoR:")
     print(f"  Mean:   {stats['qor']['mean']:.4f}")
     print(f"  Median: {stats['qor']['median']:.4f}")
@@ -374,12 +457,13 @@ def print_summary_statistics(results: List[Dict]):
 
 
 def create_visualizations(output_path: Path, results: List[Dict], 
-                         deployments: List[Dict]):
+                         deployments: List[Dict], qor_target: float):
     """Create visualization plots."""
     try:
         import matplotlib.pyplot as plt
         import matplotlib.dates as mdates
-        
+        import matplotlib
+        matplotlib.use('Agg')
         df = pd.DataFrame(results)
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df_valid = df[df['emissions'].notna()].copy()
@@ -387,34 +471,51 @@ def create_visualizations(output_path: Path, results: List[Dict],
         if len(df_valid) == 0:
             return
         
-        fig, axes = plt.subplots(3, 1, figsize=(15, 12))
+        fig, axes = plt.subplots(4, 1, figsize=(15, 16))
         
+        # Plot 1: Emissions
         axes[0].plot(df_valid['timestamp'], df_valid['emissions'], linewidth=0.5)
-        axes[0].set_title('Hourly Emissions (2024)', fontsize=14, fontweight='bold')
+        axes[0].set_title(f'Hourly Emissions (2024) - QoR Target = {qor_target:.2f}', 
+                         fontsize=14, fontweight='bold')
         axes[0].set_ylabel('Emissions (gCO₂e)')
         axes[0].grid(True, alpha=0.3)
         axes[0].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
         
-        axes[1].plot(df_valid['timestamp'], df_valid['qor_achieved'], 
-                     linewidth=0.5, color='green')
-        axes[1].set_title('QoR Achievement (2024)', fontsize=14, fontweight='bold')
-        axes[1].set_ylabel('QoR')
+        # Plot 2: Energy
+        axes[1].plot(df_valid['timestamp'], df_valid['energy_kwh'], 
+                     linewidth=0.5, color='orange')
+        axes[1].set_title(f'Hourly Energy Consumption (2024) - QoR Target = {qor_target:.2f}', 
+                         fontsize=14, fontweight='bold')
+        axes[1].set_ylabel('Energy (kWh)')
         axes[1].grid(True, alpha=0.3)
         axes[1].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
         
+        # Plot 3: QoR
+        axes[2].plot(df_valid['timestamp'], df_valid['qor_achieved'], 
+                     linewidth=0.5, color='green')
+        axes[2].axhline(y=qor_target, color='red', linestyle='--', 
+                       label=f'Target = {qor_target:.2f}', linewidth=1)
+        axes[2].set_title(f'QoR Achievement (2024) - QoR Target = {qor_target:.2f}', 
+                         fontsize=14, fontweight='bold')
+        axes[2].set_ylabel('QoR')
+        axes[2].legend()
+        axes[2].grid(True, alpha=0.3)
+        axes[2].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+        
+        # Plot 4: Machines
         df_deploy = pd.DataFrame(deployments)
         df_deploy['timestamp'] = pd.to_datetime(df_deploy['timestamp'])
         df_deploy_valid = df_deploy[df_deploy['total_machines'] > 0]
         
-        axes[2].plot(df_deploy_valid['timestamp'], 
+        axes[3].plot(df_deploy_valid['timestamp'], 
                      df_deploy_valid['total_machines'], 
                      linewidth=0.5, color='purple')
-        axes[2].set_title('Total Deployed Machines (2024)', 
+        axes[3].set_title(f'Total Deployed Machines (2024) - QoR Target = {qor_target:.2f}', 
                          fontsize=14, fontweight='bold')
-        axes[2].set_ylabel('Number of Machines')
-        axes[2].set_xlabel('Date')
-        axes[2].grid(True, alpha=0.3)
-        axes[2].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+        axes[3].set_ylabel('Number of Machines')
+        axes[3].set_xlabel('Date')
+        axes[3].grid(True, alpha=0.3)
+        axes[3].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
         
         plt.tight_layout()
         plt.savefig(output_path / 'yearly_overview.png', dpi=300, bbox_inches='tight')
@@ -427,10 +528,166 @@ def create_visualizations(output_path: Path, results: List[Dict],
         print(f"Error creating visualizations: {e}")
 
 
+def create_comparison_visualizations(base_output_path: Path, qor_targets: List[float]):
+    """Create comparison visualizations across all QoR targets."""
+    try:
+        import matplotlib.pyplot as plt
+        import matplotlib
+        matplotlib.use('Agg')
+        # Collect statistics for all QoR targets
+        comparison_data = []
+        
+        for qor_target in qor_targets:
+            qor_path = base_output_path / f"qor_{qor_target:.2f}"
+            stats_file = qor_path / "statistics.json"
+            
+            if stats_file.exists():
+                with open(stats_file, 'r') as f:
+                    stats = json.load(f)
+                    if 'error' not in stats:
+                        comparison_data.append({
+                            'qor_target': qor_target,
+                            'total_emissions_tCO2e': stats['emissions']['total_tCO2e'],
+                            'mean_emissions': stats['emissions']['mean'],
+                            'total_energy_gwh': stats['energy']['total_gwh'],
+                            'total_energy_mwh': stats['energy']['total_mwh'],
+                            'mean_energy_kwh': stats['energy']['mean_kwh'],
+                            'mean_qor': stats['qor']['mean'],
+                            'min_qor': stats['qor']['min'],
+                            'max_qor': stats['qor']['max'],
+                            'total_runtime_hours': stats['runtime']['total_hours']
+                        })
+        
+        if not comparison_data:
+            print("No data available for comparison visualizations")
+            return
+        
+        df_comp = pd.DataFrame(comparison_data)
+        
+        # Create comparison plots (3x2 grid)
+        fig, axes = plt.subplots(3, 2, figsize=(15, 18))
+        
+        # Plot 1: Total emissions vs QoR target
+        axes[0, 0].plot(df_comp['qor_target'], df_comp['total_emissions_tCO2e'], 
+                       marker='o', linewidth=2, markersize=8)
+        axes[0, 0].set_xlabel('QoR Target', fontsize=12)
+        axes[0, 0].set_ylabel('Total Annual Emissions (tCO₂e)', fontsize=12)
+        axes[0, 0].set_title('Total Emissions vs QoR Target', 
+                            fontsize=14, fontweight='bold')
+        axes[0, 0].grid(True, alpha=0.3)
+        
+        # Plot 2: Total energy vs QoR target
+        axes[0, 1].plot(df_comp['qor_target'], df_comp['total_energy_mwh'], 
+                       marker='o', linewidth=2, markersize=8, color='orange')
+        axes[0, 1].set_xlabel('QoR Target', fontsize=12)
+        axes[0, 1].set_ylabel('Total Annual Energy (MWh)', fontsize=12)
+        axes[0, 1].set_title('Total Energy vs QoR Target', 
+                            fontsize=14, fontweight='bold')
+        axes[0, 1].grid(True, alpha=0.3)
+        
+        # Plot 3: Mean hourly emissions vs QoR target
+        axes[1, 0].plot(df_comp['qor_target'], df_comp['mean_emissions'], 
+                       marker='o', linewidth=2, markersize=8, color='green')
+        axes[1, 0].set_xlabel('QoR Target', fontsize=12)
+        axes[1, 0].set_ylabel('Mean Hourly Emissions (gCO₂e)', fontsize=12)
+        axes[1, 0].set_title('Mean Hourly Emissions vs QoR Target', 
+                            fontsize=14, fontweight='bold')
+        axes[1, 0].grid(True, alpha=0.3)
+        
+        # Plot 4: Mean hourly energy vs QoR target
+        axes[1, 1].plot(df_comp['qor_target'], df_comp['mean_energy_kwh'], 
+                       marker='o', linewidth=2, markersize=8, color='darkorange')
+        axes[1, 1].set_xlabel('QoR Target', fontsize=12)
+        axes[1, 1].set_ylabel('Mean Hourly Energy (kWh)', fontsize=12)
+        axes[1, 1].set_title('Mean Hourly Energy vs QoR Target', 
+                            fontsize=14, fontweight='bold')
+        axes[1, 1].grid(True, alpha=0.3)
+        
+        # Plot 5: QoR achievement vs target
+        axes[2, 0].plot(df_comp['qor_target'], df_comp['mean_qor'], 
+                       marker='o', linewidth=2, markersize=8, label='Mean QoR', color='purple')
+        axes[2, 0].fill_between(df_comp['qor_target'], 
+                                df_comp['min_qor'], 
+                                df_comp['max_qor'], 
+                                alpha=0.3, label='Min-Max Range')
+        axes[2, 0].plot([0, 1], [0, 1], 'r--', label='Perfect Achievement', linewidth=1)
+        axes[2, 0].set_xlabel('QoR Target', fontsize=12)
+        axes[2, 0].set_ylabel('QoR Achieved', fontsize=12)
+        axes[2, 0].set_title('QoR Achievement vs Target', 
+                            fontsize=14, fontweight='bold')
+        axes[2, 0].legend()
+        axes[2, 0].grid(True, alpha=0.3)
+        
+        # Plot 6: Runtime vs QoR target
+        axes[2, 1].plot(df_comp['qor_target'], df_comp['total_runtime_hours'], 
+                       marker='o', linewidth=2, markersize=8, color='red')
+        axes[2, 1].set_xlabel('QoR Target', fontsize=12)
+        axes[2, 1].set_ylabel('Total Runtime (hours)', fontsize=12)
+        axes[2, 1].set_title('Computational Cost vs QoR Target', 
+                            fontsize=14, fontweight='bold')
+        axes[2, 1].grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        comparison_file = base_output_path / 'qor_comparison.png'
+        plt.savefig(comparison_file, dpi=300, bbox_inches='tight')
+        print(f"Comparison visualization saved: {comparison_file}")
+        plt.close()
+        
+        # Create additional plot: Emissions vs Energy (Pareto front)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        scatter = ax.scatter(df_comp['total_energy_mwh'], 
+                           df_comp['total_emissions_tCO2e'],
+                           c=df_comp['qor_target'], 
+                           cmap='viridis', 
+                           s=200, 
+                           alpha=0.7,
+                           edgecolors='black',
+                           linewidth=1.5)
+        
+        # Add labels for each point
+        for idx, row in df_comp.iterrows():
+            ax.annotate(f"{row['qor_target']:.1f}", 
+                       (row['total_energy_mwh'], row['total_emissions_tCO2e']),
+                       fontsize=9, ha='center', va='center')
+        
+        ax.set_xlabel('Total Annual Energy (MWh)', fontsize=12)
+        ax.set_ylabel('Total Annual Emissions (tCO₂e)', fontsize=12)
+        ax.set_title('Emissions vs Energy Trade-off (QoR Target labeled)', 
+                    fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3)
+        
+        cbar = plt.colorbar(scatter, ax=ax)
+        cbar.set_label('QoR Target', fontsize=12)
+        
+        plt.tight_layout()
+        pareto_file = base_output_path / 'emissions_vs_energy.png'
+        plt.savefig(pareto_file, dpi=300, bbox_inches='tight')
+        print(f"Pareto front visualization saved: {pareto_file}")
+        plt.close()
+        
+        # Save comparison data as CSV
+        df_comp.to_csv(base_output_path / 'qor_comparison.csv', index=False)
+        print(f"Comparison data saved: {base_output_path / 'qor_comparison.csv'}")
+        
+    except ImportError:
+        print("Matplotlib not available, skipping comparison visualizations")
+    except Exception as e:
+        print(f"Error creating comparison visualizations: {e}")
+
+
 if __name__ == "__main__":
+    # Define QoR targets from 0 to 1
+    #qor_targets = np.arange(0.0, 1.1, 0.1).tolist()  # [0.0, 0.1, 0.2, ..., 1.0]
+    
+    # Alternative: Custom list of QoR targets
+    qor_targets = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
+    #qor_targets = [0.9, 0.99]
+    # Alternative: Finer granularity
+    # qor_targets = np.arange(0.0, 1.05, 0.05).tolist()  # [0.0, 0.05, 0.1, ..., 1.0]
+    
     run_yearly_optimization_parallel(
-        output_dir="results/2024_hourly_parallel",
-        qor_target=0.6,
+        output_dir="results/2024_qor_sweep",
+        qor_targets=qor_targets,
         n_workers=None,  # Use all available CPUs
         batch_size=168   # Process 1 week at a time
     )

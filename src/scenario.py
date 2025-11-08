@@ -379,7 +379,7 @@ class Machine:
                     f"Performance specified for unknown quality '{quality}' on machine '{machine_name}'. "
                     f"Ensure '{quality}' is a key in the provided 'quality_to_index' mapping."
                 )
-            normalized[quality_to_index[quality]] = throughput * request_scaling_factor
+            normalized[quality_to_index[quality]] = throughput #* request_scaling_factor
         return normalized
 
 

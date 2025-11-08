@@ -69,6 +69,55 @@ class QtModel:
         return 1.0 - (max(errors) if errors else 0.0)
 
     # ------------------------------------------------------------------
+    # Calculate energy consumption
+    # ------------------------------------------------------------------
+    def _calculate_energy(
+        self,
+        a: np.ndarray,
+        d: np.ndarray,
+        emissions_window: List[int],
+        delta_t: float = 1.0,
+    ) -> float:
+        """
+        Calculate total energy consumption in kWh.
+        
+        Energy = Σ_i Δt_i * Σ_{m,q} [p^idle_{m,q} * n_{m,q,i} + β_{m,q} * Σ_u y_{u,m,q,i}]
+        
+        where β_{m,q} = (p^peak_{m,q} - p^idle_{m,q}) / θ_{m,q}
+        """
+        S = self.scenario
+        n_tiers = len(S.Q)
+        n_machines = len(S.M)
+        n_users = len(S.U)
+        
+        total_energy = 0.0
+        
+        for i in emissions_window:
+            for q_idx in range(n_tiers):
+                for m_idx in range(n_machines):
+                    machine = S.machines[S.M[m_idx]]
+                    q = S.Q[q_idx]
+                    
+                    p_idle = machine._idle_power_usage  # kW
+                    p_peak = machine._power_usage  # kW
+                    theta = machine.performance[q]  # Requests per hour
+                    
+                    # Calculate β_{m,q}
+                    if theta > 0:
+                        beta = (p_peak - p_idle) / theta  # kW per request
+                    else:
+                        beta = 0.0
+                    
+                    n_mqi = d[i, q_idx, m_idx]  # Number of machines
+                    sum_requests = sum(a[i, u_idx, q_idx] for u_idx in range(n_users))
+                    
+                    # Energy in kWh: Δt * (p^idle * n + β * requests)
+                    energy = delta_t * (p_idle * n_mqi + beta * sum_requests)
+                    total_energy += energy
+        
+        return total_energy
+
+    # ------------------------------------------------------------------
     # Build and solve LP with PuLP (NEW OBJECTIVE)
     # ------------------------------------------------------------------
     def _solve_lp(
@@ -82,17 +131,11 @@ class QtModel:
         qor_target: Optional[float] = None,
         budget: Optional[float] = None,
         delta_t: float = 1.0,
-    ) -> tuple[float, np.ndarray, np.ndarray, Dict]:
+    ) -> tuple[float, float, np.ndarray, np.ndarray, Dict]:
         """
         Solve the optimization problem using PuLP with new objective function.
         
-        New objective: E_i = Σ_{m,q} [Δt_i * C_i * (p^idle_{m,q} * n_{m,q,i} + β_{m,q} * Σ_u y_{u,m,q,i}) + C̄^emb_m * n_{m,q,i}]
-        
-        where β_{m,q} = (p^peak_{m,q} - p^idle_{m,q}) / θ_{m,q}
-        
-        mode:
-            'min_emissions': Minimize emissions s.t. QoR >= qor_target
-            'max_qor': Maximize QoR s.t. emissions <= budget
+        Returns: (emissions, energy, a, d, metrics)
         """
         if emissions_window is None:
             emissions_window = window
@@ -110,7 +153,6 @@ class QtModel:
             prob = pl.LpProblem("MaxQoR_New", pl.LpMaximize)
 
         # Decision variables
-        # a[i,u,q] = number of requests assigned to user u, tier q at interval i (y_{u,m,q,i} summed over m)
         a_vars = {}
         for i in range(n_intervals):
             for u_idx in range(n_users):
@@ -119,7 +161,6 @@ class QtModel:
                         f"a_{i}_{u_idx}_{q_idx}", lowBound=0, cat='Continuous'
                     )
 
-        # d[i,q,m] = number of machines of type m for tier q at interval i (n_{m,q,i})
         d_vars = {}
         for i in range(n_intervals):
             for q_idx in range(n_tiers):
@@ -142,26 +183,20 @@ class QtModel:
                         machine = S.machines[S.M[m_idx]]
                         q = S.Q[q_idx]
                         
-                        # Get machine parameters from config
-                        p_idle = machine._idle_power_usage  # Already in kW from config
-                        p_peak = machine._power_usage  # Max power usage in kW
-                        theta = machine.performance[q]  # Requests per hour
-                        C_emb = machine.embedded_carbon  # gCO2e/h
+                        p_idle = machine._idle_power_usage
+                        p_peak = machine._power_usage
+                        theta = machine.performance[q]
+                        C_emb = machine.embedded_carbon
                         
-                        # Calculate β_{m,q} = (p^peak - p^idle) / θ_{m,q}
                         if theta > 0:
-                            beta = (p_peak - p_idle) / theta  # kW per request
+                            beta = (p_peak - p_idle) / theta
                         else:
                             beta = 0.0
                         
-                        C_i = C_hat[i]  # gCO2e per kWh
-                        n_mqi = d_vars[i, q_idx, m_idx]  # Number of machines
-                        
-                        # Sum of requests for this tier and interval across all users
+                        C_i = C_hat[i]
+                        n_mqi = d_vars[i, q_idx, m_idx]
                         sum_requests = pl.lpSum([a_vars[i, u_idx, q_idx] for u_idx in range(n_users)])
                         
-                        # Add to emissions
-                        # Δt * C_i * (p^idle * n + β * Σ_u y) + C^emb * n
                         operational = delta_t * C_i * (p_idle * n_mqi + beta * sum_requests)
                         embedded = C_emb * n_mqi
                         emissions_expr += operational + embedded
@@ -170,7 +205,7 @@ class QtModel:
 
         # Constraints
         
-        # 1. Demand satisfaction: sum over tiers = total requests
+        # 1. Demand satisfaction
         for i in window:
             for u_idx in range(n_users):
                 prob += (
@@ -179,7 +214,7 @@ class QtModel:
                     f"demand_{i}_{u_idx}"
                 )
 
-        # 2. Capacity constraints: requests <= machine capacity
+        # 2. Capacity constraints
         for i in window:
             for q_idx in range(n_tiers):
                 total_requests = pl.lpSum([a_vars[i, u_idx, q_idx] for u_idx in range(n_users)])
@@ -190,7 +225,7 @@ class QtModel:
                 ])
                 prob += total_requests <= capacity, f"capacity_{i}_{q_idx}"
 
-        # 3. QoR/SLO constraints (per validity period)
+        # 3. QoR/SLO constraints
         for vp_idx, vp in enumerate(vps):
             for u_idx in range(n_users):
                 total_requests = sum(R_hat[i, u_idx] for i in vp)
@@ -216,7 +251,7 @@ class QtModel:
                         prob += sli - hi <= err_max * den, f"qor_upper_{vp_idx}_{u_idx}_{q_idx}"
                         prob += hi - sli <= err_max * den, f"qor_lower_{vp_idx}_{u_idx}_{q_idx}"
 
-        # 4. Budget constraint (for max_qor mode) - using NEW objective
+        # 4. Budget constraint (for max_qor mode)
         if mode == "max_qor" and budget is not None:
             emissions_expr = 0
             for i in emissions_window:
@@ -246,13 +281,13 @@ class QtModel:
             prob += emissions_expr <= budget, "budget_constraint"
 
         # Solve the problem
-        solver = pl.PULP_CBC_CMD(msg=0, timeLimit=300)  # 5 minute timeout
+        solver = pl.PULP_CBC_CMD(msg=0, timeLimit=300)
         status = prob.solve(solver)
 
         # Extract results
         if status not in [pl.LpStatusOptimal, pl.LpStatusNotSolved]:
             print(f"WARNING: PuLP solver status: {pl.LpStatus[status]}")
-            return 0.0, np.zeros_like(self.a_), np.zeros_like(self.d_), {
+            return 0.0, 0.0, np.zeros_like(self.a_), np.zeros_like(self.d_), {
                 "status": pl.LpStatus[status],
                 "objective": 0.0
             }
@@ -267,8 +302,10 @@ class QtModel:
         for (i, q_idx, m_idx), var in d_vars.items():
             d[i, q_idx, m_idx] = var.varValue if var.varValue is not None else 0.0
 
-        # Calculate emissions using NEW formula
+        # Calculate emissions and energy
         emissions = 0.0
+        energy = 0.0
+        
         for i in emissions_window:
             for q_idx in range(n_tiers):
                 for m_idx in range(n_machines):
@@ -289,6 +326,11 @@ class QtModel:
                     n_mqi = d[i, q_idx, m_idx]
                     sum_requests = sum(a[i, u_idx, q_idx] for u_idx in range(n_users))
                     
+                    # Energy consumption (kWh)
+                    energy_component = delta_t * (p_idle * n_mqi + beta * sum_requests)
+                    energy += energy_component
+                    
+                    # Emissions (gCO2e)
                     operational = delta_t * C_i * (p_idle * n_mqi + beta * sum_requests)
                     embedded = C_emb * n_mqi
                     emissions += operational + embedded
@@ -298,7 +340,7 @@ class QtModel:
             "objective": pl.value(prob.objective) if prob.objective is not None else 0.0
         }
 
-        return emissions, a, d, metrics
+        return emissions, energy, a, d, metrics
 
     # ------------------------------------------------------------------
     # Minimize emissions s.t. QoR >= target
@@ -316,7 +358,7 @@ class QtModel:
         t0 = time()
         vps = get_validity_periods(window, self.scenario.vp, past=past_vps, future=future_vps)
         
-        em, a, d, lp_metrics = self._solve_lp(
+        em, energy, a, d, lp_metrics = self._solve_lp(
             window, R_hat, C_hat, vps,
             emissions_window=window,
             mode="min_emissions",
@@ -333,6 +375,7 @@ class QtModel:
             "qor_target": qor_target,
             "qor_achieved": achieved_qor,
             "emissions": em,
+            "energy": energy,  # NEW: Total energy consumption in kWh
             "runtime": time() - t0,
             "work": 0.0,
             "mip_gap": 0.0,
@@ -364,7 +407,7 @@ class QtModel:
         t0 = time()
         vps = get_validity_periods(window, self.scenario.vp, past=past_vps, future=future_vps)
 
-        em, a, d, lp_metrics = self._solve_lp(
+        em, energy, a, d, lp_metrics = self._solve_lp(
             window, R_hat, C_hat, vps,
             emissions_window=emissions_window,
             mode="max_qor",
@@ -377,6 +420,7 @@ class QtModel:
         metrics = {
             "qor_target": achieved_qor,
             "emissions": em,
+            "energy": energy,  # NEW: Total energy consumption in kWh
             "runtime": time() - t0,
             "work": 0.0,
             "mip_gap": 0.0,
@@ -397,20 +441,18 @@ if __name__ == "__main__":
     with initialize(version_base=None, config_path="../config"):
         cfg = compose(config_name="config")
     scenario = Scenario.from_config(cfg)
-    R_hat = scenario.R * 1000
-    
-    C_hat = scenario.C
+    R_hat = scenario.R * 1_000_000
+    C_hat = scenario.C * 1_000_000
+    print(C_hat.shape)
+    print(C_hat[0])
     solver = QtModel(scenario)
     window = scenario.I[:1]
     
     print("\n" + "=" * 60)
-    print("PULP SOLVER – NEW OBJECTIVE FUNCTION")
-    print("=" * 60)
-    print("\nObjective: E_i = Σ_{m,q} [Δt*C_i*(p^idle*n + β*Σ_u y) + C^emb*n]")
-    print("where β_{m,q} = (p^peak - p^idle) / θ_{m,q}")
+    print("PULP SOLVER")
     print("=" * 60)
     
-    # Print machine parameters for verification
+    # Print machine parameters
     print("\nMachine Parameters:")
     print("-" * 60)
     for m_idx, m in enumerate(scenario.M):
@@ -424,29 +466,18 @@ if __name__ == "__main__":
             theta = machine.performance[q]
             if theta > 0:
                 beta = (machine._power_usage - machine._idle_power_usage) / theta
-                print(f"    {q}: {theta:>6.0f} rps, β = {beta*1e6:.4f} W/req")
+                print(f"    {q}: {theta:>6.0f} req/hour, β = {beta*1e6:.4f} mW/req")
     
-    # ---- Minimize emissions (QoR >= 0.6) ----
+    # Minimize emissions
     print("\n" + "=" * 60)
     print("1. MINIMIZE EMISSIONS")
     print("-" * 50)
-    min_res = solver.minimize_emissions(qor_target=0.8, window=window, R_hat=R_hat, C_hat=C_hat)
-    print(f" Runtime     : {min_res['runtime']:.3f} s")
-    print(f" LP Status   : {min_res['lp_status']}")
-    print(f" Emissions   : {min_res['emissions']:_.0f} gCO₂e")
-    print(f" Achieved QoR: {min_res['qor_achieved']:.4f}")
+    min_res = solver.minimize_emissions(qor_target=0.1, window=window, R_hat=R_hat, C_hat=C_hat)
+    print(f" Runtime       : {min_res['runtime']:.3f} s")
+    print(f" LP Status     : {min_res['lp_status']}")
+    print(f" Emissions     : {min_res['emissions']:_.0f} gCO₂e")
+    print(f" Energy        : {min_res['energy']:_.2f} kWh")  # NEW
+    print(f" Achieved QoR  : {min_res['qor_achieved']:.4f}")
     _print_deployment(solver.d_, scenario, window)
-    
-    # ---- Maximize QoR under +5% budget ----
-    # budget = min_res["emissions"] * 1.05
-    # print("\n" + "=" * 60)
-    # print("2. MAXIMIZE QoR (budget = +5%)")
-    # print("-" * 50)
-    # max_res = solver.maximize_qor(budget=budget, window=window, R_hat=R_hat, C_hat=C_hat)
-    # print(f" Runtime     : {max_res['runtime']:.3f} s")
-    # print(f" LP Status   : {max_res['lp_status']}")
-    # print(f" Emissions   : {max_res['emissions']:_.0f} gCO₂e")
-    # print(f" Achieved QoR: {max_res['qor_target']:.4f}")
-    # _print_deployment(solver.d_, scenario, window)
     
     print("\nDone!")
