@@ -443,8 +443,7 @@ if __name__ == "__main__":
     scenario = Scenario.from_config(cfg)
     R_hat = scenario.R * 1_000_000
     C_hat = scenario.C * 1_000_000
-    print(C_hat.shape)
-    print(C_hat[0])
+
     solver = QtModel(scenario)
     window = scenario.I[:1]
     
@@ -478,6 +477,18 @@ if __name__ == "__main__":
     print(f" Emissions     : {min_res['emissions']:_.0f} gCO₂e")
     print(f" Energy        : {min_res['energy']:_.2f} kWh")  # NEW
     print(f" Achieved QoR  : {min_res['qor_achieved']:.4f}")
+    _print_deployment(solver.d_, scenario, window)
+
+    # ---- Maximize QoR under +5% budget ----
+    budget = min_res["emissions"] * 1.05
+    print("\n2. MAXIMIZE QoR (budget = +5%)")
+    print("-" * 50)
+    max_res = solver.maximize_qor(budget=budget, window=window, R_hat=R_hat, C_hat=C_hat)
+    print(f" Runtime     : {max_res['runtime']:.3f} s")
+    print(f" LP Status   : {max_res['lp_status']}")
+    print(f" Emissions   : {max_res['emissions']:_.0f} gCO₂e")
+    print(f" Energy      : {max_res['energy']:_.2f} kWh")  # NEW
+    print(f" Achieved QoR: {max_res['qor_target']:.4f}")
     _print_deployment(solver.d_, scenario, window)
     
     print("\nDone!")

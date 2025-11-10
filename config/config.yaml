@@ -7,7 +7,7 @@ seed: 42
 qor_target: 0.6
 
 requests_dataset: poisson_requests     #"normal_requests", "static_requests", "synthetic_requests"
-region: AU-QLD
+region: GB
 
 vp: 1 # validity period duration
 
