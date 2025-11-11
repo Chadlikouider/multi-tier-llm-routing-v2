@@ -404,7 +404,7 @@ if __name__ == "__main__":
     print(f"R_hat[0]: {R_hat[0]}")
     print(f"C_hat[0]: {C_hat[0]}")
     solver = QtModel(scenario)
-    window = scenario.I[:1]
+    window = scenario.I[1:2]
     print("\n" + "=" * 60)
     print("PULP SOLVER")
     print("=" * 60)
@@ -427,7 +427,7 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("1. MINIMIZE EMISSIONS")
     print("-" * 50)
-    min_res = solver.minimize_emissions(qor_target=0.2, window=window, R_hat=R_hat, C_hat=C_hat)
+    min_res = solver.minimize_emissions(qor_target=0.5, window=window, R_hat=R_hat, C_hat=C_hat)
     print(f" Runtime : {min_res['runtime']:.3f} s")
     print(f" LP Status : {min_res['lp_status']}")
     print(f" Emissions : {min_res['emissions']:_.0f} gCO₂e")
