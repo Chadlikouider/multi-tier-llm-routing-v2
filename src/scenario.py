@@ -379,7 +379,7 @@ class Machine:
                     f"Performance specified for unknown quality '{quality}' on machine '{machine_name}'. "
                     f"Ensure '{quality}' is a key in the provided 'quality_to_index' mapping."
                 )
-            normalized[quality_to_index[quality]] = throughput #* request_scaling_factor
+            normalized[quality_to_index[quality]] = throughput * request_scaling_factor
         return normalized
 
 
@@ -533,6 +533,6 @@ def load_carbon_intensity(region: str):
     # 5. Slice the last 8 784 rows → C  (g → t conversion)
     # ------------------------------------------------------------------ #
     
-    C = raw["y"].values[-len(DT_INDEX):] / 1_000_000
+    C = raw["y"].values[-len(DT_INDEX):] #/ 1_000_000
 
     return C, raw

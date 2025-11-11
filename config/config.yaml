@@ -6,8 +6,8 @@ defaults:
 seed: 42
 qor_target: 0.6
 
-requests_dataset: poisson_requests     #"normal_requests", "static_requests", "synthetic_requests"
-region: GB
+requests_dataset: normal_requests     #"normal_requests", "static_requests", "synthetic_requests"
+region: CA-ON
 
 vp: 1 # validity period duration
 
