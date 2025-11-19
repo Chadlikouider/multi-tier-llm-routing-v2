@@ -7,5 +7,5 @@ __pycache__/
 
 # Cache or temporary data
 cache/
-data/request_traces/
+#data/request_traces/
 results/
