@@ -272,8 +272,8 @@ if __name__ == "__main__":
     #qor_targets = np.arange(0.0, 1.1, 0.1).tolist()  # [0.0, 0.1, 0.2, ..., 1.0]
     
     # Alternative: Custom list of QoR targets
-    #qor_targets = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
-    qor_targets = [0.5]
+    qor_targets = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
+    #qor_targets = [0.5]
     # Alternative: Finer granularity
     # qor_targets = np.arange(0.0, 1.05, 0.05).tolist()  # [0.0, 0.05, 0.1, ..., 1.0]
     
