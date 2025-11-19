@@ -220,8 +220,10 @@ def run_yearly_optimization_parallel(
             all_results.extend(batch_results)
             deployments.extend(batch_deployments)
             
-            # Save checkpoint after each batch
-            save_checkpoint(output_path, all_results, deployments, batch_end)
+            # Only save checkpoint if we have reached the final hour (8760)
+            if batch_end == total_hours:
+                print(f"Saving specific checkpoint: checkpoint_hour_{batch_end}.json")
+                save_checkpoint(output_path, all_results, deployments, batch_end)
             
             # Print progress
             elapsed = (datetime.now() - start_time).total_seconds()
