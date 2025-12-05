@@ -514,7 +514,7 @@ if __name__ == "__main__":
     
     # Create solver instance
     solver = QtModel(scenario)
-    window = scenario.I[1001:1002]  # Single interval window for demo (I is list of intervals)
+    window = scenario.I[1002:1003]  # Single interval window for demo (I is list of intervals)
     
     # Header for demo
     print("\n" + "=" * 60)

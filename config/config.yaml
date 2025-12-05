@@ -7,7 +7,7 @@ seed: 42
 qor_target: 0.6
 
 requests_dataset: normal_requests     #"normal_requests", "static_requests", "synthetic_requests"
-region: CA-ON
+region: NL
 
 vp: 1 # validity period duration
 
@@ -42,7 +42,7 @@ machines:
       tier_2: 38556     # 10.71 rps
       tier_3: 34632     # 9.62 rps
       tier_4: 52308     # 14.53 rps
-    embedded_carbon: 240
+    embedded_carbon: 273
   - _target_: src.scenario.Machine
     name: AWS_p6-b200.48xlarge
     power_usage: 10.3                # 8,800 W
@@ -54,6 +54,6 @@ machines:
       tier_2: 99000     # 25–30 rps → midpoint 27.5
       tier_3: 81000     # 20–25 rps → midpoint 22.5
       tier_4: 115200    # 32 rps
-    embedded_carbon: 370
+    embedded_carbon: 508
 
 result_dir: results
